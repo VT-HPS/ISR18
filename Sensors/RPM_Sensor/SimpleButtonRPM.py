@@ -1,6 +1,6 @@
 from gpiozero import Button
 import time
-button = Button(4, False)
+button = Button(2)
 prevState = 0
 prevTime = time.time()
 rpm = 0
@@ -14,4 +14,5 @@ while True:
             prevTime = time.time()
             print(rpm)
     prevState = currentState
+
     

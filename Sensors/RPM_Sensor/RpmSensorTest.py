@@ -1,6 +1,5 @@
 from gpiozero import Button
 import time
-print("Hi")
 button = Button(4, False)
 while True:
     print(button.value)
