@@ -12,3 +12,6 @@
     1. ssh hps@IP_ADDRESS
         1. If in the bay ip address might me 172.29.211.232
         2. ask for password from LE - hint: its 3 letters
+      
+## IMU 
+![IMU website](https://ozzmaker.com/product/berryimu-accelerometer-gyroscope-magnetometer-barometricaltitude-sensor/) 
