@@ -14,4 +14,4 @@
         2. ask for password from LE - hint: its 3 letters
       
 ## IMU 
-![IMU website](https://ozzmaker.com/product/berryimu-accelerometer-gyroscope-magnetometer-barometricaltitude-sensor/) 
+[IMU website](https://ozzmaker.com/product/berryimu-accelerometer-gyroscope-magnetometer-barometricaltitude-sensor/) 
