@@ -7,6 +7,7 @@ from tkinter import ttk
 import tkinter as tk
 from math import sqrt, pow, pi
 from numpy import interp
+from pathlib import Path
 import threading
 import random
 from collections import deque
@@ -23,6 +24,11 @@ depth_indicator = 0
 
 
 ######### CREATE DATALOGGING FILE ###################################################################################
+
+# Create directory if it does not exist
+home_dir = os.path.expanduser('~') # Get the path to the user's home directory
+directory_path = os.path.join(home_dir, 'HPS/Data/ISR18/')
+Path(directory_path).mkdir(parents=True, exist_ok=True)
 
 home_dir = os.path.expanduser('~') # Get the path to the user's home directory
 file_path = os.path.join(home_dir, 'HPS/Data/ISR18/serial_list_data.txt') # Create a file path in the home directory
@@ -204,10 +210,14 @@ def gyro_dashboard():
     
 
 def depth_dashboard():
+    global depth
+    insideSensorValue = random.randrange(0, 1023) 
     depth = calculate_depth(insideSensorValue)
     depth_graphic_coord = convert_depth_to_coord(insideSensorValue)
     depth_canvas.coords(depth_bar, 3, 400, 100, depth_graphic_coord)
     depth_value_label.config(text=str(depth), font=("Times", 25, "bold"))
+
+
 
 def speed_dashboard():
     display_speed(rpm_value)
@@ -246,7 +256,7 @@ def get_random_xy_coord():
             gyro_coord = [int(x), int(y)]
 
             rpm_value = random.randrange(0, 250)      
-
+            insideSensorValue = random.randrange(0, 1023) 
             ps_value = random.randrange(12, 360)
             depth_indicator = convert_depth_to_coord(ps_value)
             serial_list = [depth_indicator, rpm_value, int(x), int(y)]
@@ -344,9 +354,9 @@ if '__main__' == __name__:
     # heading elements
 
     # random data testing
-    #th = threading.Thread(target=get_random_xy_coord, args=(),  daemon=True)
+    th = threading.Thread(target=get_random_xy_coord, args=(),  daemon=True)
 
-    th = threading.Thread(target=read_sensor_data, args=(),  daemon=True)
+    #th = threading.Thread(target=read_sensor_data, args=(),  daemon=True)
     th.start()
     
     update_gui()
