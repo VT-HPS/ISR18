@@ -1,9 +1,11 @@
 # ISR18
 
+## Perf Board Wiring Diagram
+![image](https://github.com/VT-HPS/ISR18/blob/main/Pictures/HPS%20Perfboard%20Wiring%20Diagram.png)
+
 ## Raspberry Pi 4B Pin Setup
 ![image](https://github.com/VT-HPS/ISR18/blob/cea95439157fb11f8bce3168e55f9beddc98750a/Pictures/Raspberry_Pi_Pins.png)
 ![image](https://github.com/VT-HPS/ISR18/blob/cea95439157fb11f8bce3168e55f9beddc98750a/Pictures/Raspberry_Pi_Pin_Specs.png)
-
 
 ## SSH-ing into Raspberry Pi in the HPS Bay
 1. Your laptop’s wifi  =  Eduroam
