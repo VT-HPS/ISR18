@@ -363,5 +363,5 @@ if '__main__' == __name__:
 
     time.sleep(30)  # Pause for 3 seconds
 
-    root.mainloop()  # run hud
+    #root.mainloop()  # run hud
     #test.mainloop()
