@@ -1,5 +1,5 @@
-const int firstButtonPin = 3;
-const int secondButtonPin = 4;
+const int firstButtonPin = 4;
+const int secondButtonPin = 3;
 const int thirdButtonPin = 5;
 int lastButton1State = LOW;
 int lastButton2State = LOW;
@@ -12,6 +12,7 @@ unsigned long thirdButtonMillis = 0;
 void setup() {
   pinMode(firstButtonPin, INPUT);
   pinMode(secondButtonPin, INPUT);
+  pinMode(thirdButtonPin, INPUT);
   Serial.begin(115200);  // Set the same Baud Rate as in MATLAB code
 
   firstButtonMillis = secondButtonMillis = thirdButtonMillis = millis();
