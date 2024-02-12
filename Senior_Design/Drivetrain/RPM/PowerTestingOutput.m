@@ -1,0 +1,178 @@
+% MATLAB code to read serial data from Arduino using serialport object
+% This file runs in conjunction with Arduino_Power_Code.ino
+
+% Because the almighty code gods will it
+clear
+clc
+close all
+
+% Connect to Arduino
+comPort = 'COM3';  
+baudRate = 115200; % Make sure it is the same as the arduino code
+
+% Open the serial port
+serialConnect = serialport(comPort, baudRate);
+configureTerminator(serialConnect, "LF"); 
+
+% Prompt the user for the output data file name
+outputFileName = input('Enter the output data file name in the format Initials_#.txt (e.g. TE_1.txt): ', 's');
+
+% Determine test data folder and get full file path
+underscoreIndex = strfind(outputFileName, '_');
+outputTestFolder = outputFileName(1:underscoreIndex(1)-1);
+outputFileName = "./Onland_Testing_Data/" + outputTestFolder + "/" + outputFileName;
+
+% Create the directory if it doesn't exist
+outputDirectory = fileparts(outputFileName);
+if ~isfolder(outputDirectory)
+    mkdir(outputDirectory);
+end
+
+% Open the data file for writing
+dataFile = fopen(outputFileName, 'w');
+
+% Check if the file was opened successfully
+if dataFile == -1
+    error(['Unable to open the file ', outputFileName, ' for writing.']);
+end
+
+% Duration to read data (in seconds).
+duration = 3000;
+
+
+% Initialize arrays for storing data and timestamps.
+Activations = [];
+timeValues = [];
+
+% Initialize arrays to hold the queueueue of times (used to calculate an
+% averaged RPM value)
+temp1Times = [];
+temp2Times = [];
+temp3Times = [];
+
+% Create a figure for real-time plotting
+figure;
+hold on;
+r1 = animatedline('Color', 'r');
+r2 = animatedline('Color', 'g');
+r3 = animatedline('Color', 'b');
+title("RPM from various spots on test rig");
+xlabel("Time (s)");
+ylabel("RPM (rpm)");
+
+% Create the GUI to display values (did not spend much time learning how to
+% format)
+fig = uifigure;
+tlabel = uilabel(fig);
+tlabel.Position = [100 100 500 100];
+
+% % Wait for space bar to be pressed
+% disp('Press the space bar to start collecting data.');
+% waitForKeyPress(' ');
+
+tic;
+while toc <= duration
+    % Check if there is data available
+    if serialConnect.NumBytesAvailable > 0
+        % Read data from Arduino
+        data = str2double(readline(serialConnect));
+
+        currentTime = toc;
+        timeValues = [timeValues currentTime];
+        Activations = [Activations data];
+
+        % Write the activation type and sensor # to the file in csv format
+        fprintf(dataFile, '%f, %d\n', currentTime, data);
+
+        % Store the read data in the corresponding data arrays.
+        if data == 1
+            temp1Times = [temp1Times currentTime];
+        end
+        if data == 2
+            temp2Times = [temp2Times currentTime];
+        end
+        if data == 3
+            temp3Times = [temp3Times currentTime];
+        end
+
+
+            % Calculate RPM values
+            %         RPM1 = 60.0 / mean(diff(nonzeros(temp1Times)));
+            %         RPM2 = 60.0 / mean(diff(nonzeros(temp2Times)));
+            %         RPM3 = 60.0 / mean(diff(nonzeros(temp3Times)));
+
+            if (length(temp1Times) > 10)
+            RPM1 = 10*(60/(temp1Times(end) - temp1Times(end-9)));
+            else
+                RPM1 = NaN;
+            end
+            if (length(temp2Times) > 10)
+            RPM2 = 10*(60/(temp2Times(end) - temp2Times(end-9)));
+            else
+                RPM2 = NaN;
+            end
+            if (length(temp3Times) > 10)
+            RPM3 = 10*(60/(temp3Times(end) - temp3Times(end-9)));
+            else
+                RPM3 = NaN;
+            end
+
+
+            % Update plot
+            addpoints(r1, currentTime, RPM1);
+            addpoints(r2, currentTime, RPM2);
+            addpoints(r3, currentTime, RPM3);
+            % xlim([currentTime - 10, currentTime]);
+            drawnow;
+
+            % Update the GUI
+            text = sprintf('RPM1 = %.2f \nRPM2 = %.2f \nRPM3 = %.2f',RPM1, RPM2, RPM3);
+            tlabel.Text = text;
+
+            % % Write time value to data file if corresponding activation is 1
+            % if data == 1
+            %     fprintf(dataFile, '%f\n', currentTime);
+            % end
+    end
+end
+
+% Close serial connection
+clear serialConnect; % This will also close the connection
+
+% Close the data file
+fclose(dataFile);
+
+% % Calculate Quantities
+% revTimes = timeValues(logical([0 (diff(Activations) == 1)]));
+% RPM = 60 ./ diff(revTimes);
+
+% %% Plots
+% figure;
+% tiledlayout(2, 1)
+%
+% % Plot Activations
+% nexttile
+% plot(timeValues, Activations);
+% title("Activations");
+% xlabel("Time (s)");
+% ylabel("Amplitude");
+%
+% % Plot RPM
+% nexttile
+% plot(revTimes(2:end), RPM);
+% title("RPM");
+% xlabel("Time (s)");
+% ylabel("RPM");
+
+%% Functions
+% Function to wait for a specific key press
+function waitForKeyPress(key)
+    disp(['Waiting for key press (', key, ')...']);
+    while true
+        k = waitforbuttonpress;
+        if k == 1 && strcmp(get(gcf, 'CurrentCharacter'), key)
+            break;
+        end
+    end
+    disp(['Key press detected: ', key]);
+end

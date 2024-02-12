@@ -20,7 +20,7 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.speed_value = tk.StringVar()
         self.speed_value.set("0.0 m/s")
 
-        self.speed_gauge = ttk.Progressbar(self.speed_frame, orient="vertical", length=150, mode="determinate")
+        self.speed_gauge = ttk.Progressbar(self.speed_frame, orient="vertical", length=200, mode="determinate")
         self.speed_gauge.pack(pady=10)
 
         self.speed_display = tk.Label(self.speed_frame, textvariable=self.speed_value, font=("Helvetica", 16))
@@ -36,7 +36,7 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.depth_value = tk.StringVar()
         self.depth_value.set("0.0 feet")
 
-        self.depth_gauge = ttk.Progressbar(self.depth_frame, orient="vertical", length=150, mode="determinate")
+        self.depth_gauge = ttk.Progressbar(self.depth_frame, orient="vertical", length=200, mode="determinate")
         self.depth_gauge.pack(pady=10)
 
         self.depth_display = tk.Label(self.depth_frame, textvariable=self.depth_value, font=("Helvetica", 16))
@@ -59,7 +59,7 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.heading_canvas.pack(pady=10)
 
         # Schedule the update_random_values function to be called every second
-        self.after(1000, self.update_random_values)
+        #self.after(1000, self.update_random_values)
 
     def update_random_values(self):
         # Generate random speed, depth, and heading values
@@ -68,14 +68,10 @@ class SpeedDepthHeadingGauges(tk.Tk):
         random_heading = random.uniform(0, 360)
 
         # Update speed gauge and label
-        speed_gauge_value = int((random_speed / 5) * 100)
-        self.speed_gauge["value"] = speed_gauge_value
-        self.speed_value.set(f"{random_speed:.2f} m/s")
+        self.update_speed_gauge(random_speed)
 
         # Update depth gauge and label
-        depth_gauge_value = int((random_depth / 10) * 100)
-        self.depth_gauge["value"] = depth_gauge_value
-        self.depth_value.set(f"{random_depth:.2f} feet")
+        self.update_depth_gauge(random_depth)
 
         # Update heading gauge and label
         heading_value = f"{random_heading:.2f} degrees"
@@ -86,6 +82,16 @@ class SpeedDepthHeadingGauges(tk.Tk):
 
         # Schedule the function to be called again after one second
         self.after(1000, self.update_random_values)
+        
+    def update_speed_gauge(self, new_speed):
+        speed_gauge_value = int((new_speed / 5) * 100)
+        self.speed_gauge["value"] = speed_gauge_value
+        self.speed_value.set(f"{new_speed:.2f} m/s")    
+        
+    def update_depth_gauge(self, new_depth):
+        depth_gauge_value = int((new_depth / 10) * 100)
+        self.depth_gauge["value"] = depth_gauge_value
+        self.depth_value.set(f"{new_depth:.2f} feet")
 
     def update_heading_canvas(self, heading_angle):
         # Clear the canvas
