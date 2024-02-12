@@ -19,7 +19,7 @@ data_sets = {'\100', '\133', '\var'};
 for ii = 1:length(data_sets)
 
     %Goes into the individual tests directory  then folder
-    d = dir(strcat(data_dir, data_sets{1}));
+    d = dir(strcat(data_dir, data_sets{ii}));
     data_folder = d.folder;
 
     for jj = 3:length(d)
@@ -41,6 +41,32 @@ for ii = 1:length(data_sets)
             data3_indicies = find(data(:,2) == 3);
             data3_time = data(data3_indicies, 1);
 
+            data_times = {data1_time, data2_time, data3_time};
+
+            RPM1 = [];
+            RPM2 = [];
+            RPM3 = [];
+ 
+            RPM = {RPM1, RPM2, RPM3};
+
+            %Iterating through calculating RPM over 10 activations
+            for kk = 1:length(data_times)
+    
+                for ll = 10:length(data_times{kk})
+                    RPM{kk}(ll - 9) = 10*(60/(data_times{kk}(ll) - data_times{kk}(ll-9)));
+                end
+            end
+
+
+            figure()
+            hold on
+            plot(data1_time(10:end), RPM{1})
+            plot(data2_time(10:end), RPM{2})
+            plot(data3_time(10:end), RPM{3})
+            ylabel('RPM')
+            title(d(jj).name)
+            legend('Sensor 1', 'Sensor 2', 'Sensor 3')
+            hold off
 
 
         end

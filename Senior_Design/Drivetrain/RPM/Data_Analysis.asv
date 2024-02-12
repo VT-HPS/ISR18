@@ -31,7 +31,7 @@ for ii = 1:length(data_sets)
             filename = fullfile(data_folder, d(jj).name);
             data = readmatrix(filename);
 
-            %Seperating each data 
+            %Seperating each individual activation per sensor
             data1_indicies = find(data(:,2) == 1);
             data1_time = data(data1_indicies, 1);
 
@@ -41,7 +41,23 @@ for ii = 1:length(data_sets)
             data3_indicies = find(data(:,2) == 3);
             data3_time = data(data3_indicies, 1);
 
+            data_times = {data1_time, data2_time, data3_time};
 
+            RPM1 = [];
+            RPM2 = [];
+            RPM3 = [];
+ 
+            RPM = {RPM1, RPM2, RPM3};
+
+            for kk = 1:length(data_times)
+    
+                for ll = 10:length(data_times{kk})
+                    RPM{kk}(ll - 9) = 10*(60/(data_times{kk}(ll) - data_times{kk}(ll-9)));
+                end
+            end
+
+            figure()
+            xlabel()
 
         end
 
