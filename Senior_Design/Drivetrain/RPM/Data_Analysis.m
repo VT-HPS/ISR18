@@ -24,7 +24,7 @@ for ii = 1:length(data_sets)
 
     for jj = 3:length(d)
         if (ii == 1 && jj == 3)
-            jawn =1;
+            jawn = 1;
         else
 
             %Goes into the trial and takes data
