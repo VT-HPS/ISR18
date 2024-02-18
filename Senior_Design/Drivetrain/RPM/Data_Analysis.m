@@ -15,6 +15,8 @@ data_dir = strcat(pwd, folder_name);
 
 %The only data sets we are looking at
 data_sets = {'\100', '\133', '\var'};
+% data_sets = {'\test'};
+
 
 for ii = 1:length(data_sets)
 
