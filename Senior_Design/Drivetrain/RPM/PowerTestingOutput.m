@@ -7,7 +7,7 @@ clc
 close all
 
 % Connect to Arduino
-comPort = 'COM3';  
+comPort = 'COM4';  
 baudRate = 115200; % Make sure it is the same as the arduino code
 
 % Open the serial port
@@ -37,7 +37,7 @@ if dataFile == -1
 end
 
 % Duration to read data (in seconds).
-duration = 3000;
+duration = 75;
 
 
 % Initialize arrays for storing data and timestamps.
