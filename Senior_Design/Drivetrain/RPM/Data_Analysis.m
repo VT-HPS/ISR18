@@ -14,7 +14,7 @@ data_dir = strcat(pwd, folder_name);
 % Onland_Test = dir(data_dir);
 
 %The only data sets we are looking at
-data_sets = {'\100', '\133', '\var'};
+data_sets = {'\100', '\133', '\var', '\75'};
 % data_sets = {'\test'};
 
 

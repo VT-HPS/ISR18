@@ -7,7 +7,7 @@ clc
 close all
 
 % Connect to Arduino
-comPort = 'COM4';  
+comPort = 'COM3';  
 baudRate = 115200; % Make sure it is the same as the arduino code
 
 % Open the serial port
