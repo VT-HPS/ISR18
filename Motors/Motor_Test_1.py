@@ -3,7 +3,7 @@ import time
 
 # Set the GPIO mode and pin number
 GPIO.setmode(GPIO.BCM)
-GPIO_PIN = 25
+GPIO_PIN = 18
 
 # Set the GPIO pin as an output
 GPIO.setup(GPIO_PIN, GPIO.OUT)
@@ -16,7 +16,7 @@ sleep_time = 3
 
 try:
     # Start PWM with a duty cycle of 21% (2100 microseconds)
-    pwm.start(22)
+    pwm.start(21)
 
     # Wait for 5 seconds
     time.sleep(sleep_time)
@@ -28,7 +28,7 @@ try:
     time.sleep(sleep_time)
 
     # Change the duty cycle to 9% (900 microseconds)
-    pwm.ChangeDutyCycle(8)
+    pwm.ChangeDutyCycle(10)
 
     # Wait for 5 seconds
     time.sleep(sleep_time)
