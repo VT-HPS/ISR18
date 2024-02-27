@@ -63,18 +63,99 @@ if __name__ == "__main__":
         depth = get_depth_data(True)
         pitch_angle = 0
         
-        if (depth > 15 and pitch_angle > 0):
+        if (depth < 13 and pitch_angle > 12):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(-15))
+        elif (depth < 13 and pitch_angle > 8):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(-13))
+        elif (depth < 13 and pitch_angle > 4):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(-11))
+        elif (depth < 13 and pitch_angle > 0):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(-9))
+        elif (depth < 13 and pitch_angle > -4):
+            print("Down mid")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(-4))
+        elif (depth < 13 and pitch_angle > -8):
+            print("Down mid")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(0))
+        elif (depth < 13 and pitch_angle > -12):
+            print("start correcting")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(2))
+        elif (depth < 13 and pitch_angle < -12):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(7))
+        elif (depth < 15 and pitch_angle < 12):
+            print("Down slow")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(-15))
+        elif (depth < 15 and pitch_angle > 8):
             print("Down fast")
             pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(-10))
-        elif (depth > 15 and pitch_angle < 0):
-            print("Up slow")
-            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(-5))
-        elif (depth == 15):
-            print("neutral")
-            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(0))
+        elif (depth < 15 and pitch_angle > 4):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(-6))
         elif (depth < 15 and pitch_angle > 0):
-            print("Up slow")    
-            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(5))
-        elif (depth < 15 and pitch_angle < 0):
-            print("Up fast")
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(-2))
+        elif (depth < 15 and pitch_angle > -4):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(0))
+        elif (depth < 15 and pitch_angle > -8):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(3))
+        elif (depth < 15 and pitch_angle > -12):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(8))
+        elif (depth < 15 and pitch_angle < -12):
+            print("Down fast")
             pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(10))
+        elif (depth < 17 and pitch_angle < 12):
+            print("Down slow")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(-10))
+        elif (depth < 17 and pitch_angle > 8):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(-8))
+        elif (depth < 17 and pitch_angle > 4):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(-3))
+        elif (depth < 17 and pitch_angle > 0):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(0))
+        elif (depth < 17 and pitch_angle > -4):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(2))
+        elif (depth < 17 and pitch_angle > -8):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(6))
+        elif (depth < 17 and pitch_angle > -12):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(10))
+        elif (depth < 17 and pitch_angle < -12):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(15))
+        elif (depth > 17 and pitch_angle > 12):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(-7))
+        elif (depth > 17 and pitch_angle > 8):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(-2))
+        elif (depth > 17 and pitch_angle > 4):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(0))
+        elif (depth > 17 and pitch_angle > 0):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(2))
+        elif (depth > 17 and pitch_angle > -4):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(9))
+        elif (depth > 17 and pitch_angle > -8):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(11))
+        elif (depth > 17 and pitch_angle > -12):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(13))
+        elif (depth > 17 and pitch_angle < -12):
+            print("Down fast")
+            pwm.set_PWM_dutycycle(PWM_PIN, fin_angle_to_dc(15))
