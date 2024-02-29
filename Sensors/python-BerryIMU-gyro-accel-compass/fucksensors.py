@@ -91,19 +91,27 @@ a = datetime.datetime.now()
 
 
 while True:
-    pressure = channel.value / 1023 * 5
-    print("\nPressure: ", pressure, "Button Value: ", button.value)
     time.sleep(0.5)
-    #Read the accelerometer,gyroscope and magnetometer values
+    
     ACCx = IMU.readACCx()
     ACCy = IMU.readACCy()
     ACCz = IMU.readACCz()
     GYRx = IMU.readGYRx()
     GYRy = IMU.readGYRy()
     GYRz = IMU.readGYRz()
+
+    if (ACCx + ACCy + ACCz == 0) or (GYRx + GYRy + GYRz == 0):
+        print("One of the sensors had a fucky wucky. We're going to try that again.")
+        continue
+    
+    pressure = channel.value / 1023 * 5
+    print("\nPressure: ", pressure, "Button Value: ", button.value)
+
+    #Read the accelerometer,gyroscope and magnetometer values
     MAGx = IMU.readMAGx()
     MAGy = IMU.readMAGy()
     MAGz = IMU.readMAGz()
+
 
     #Apply compass calibration
     MAGx -= (magXmin + magXmax) /2
@@ -158,6 +166,8 @@ while True:
     ###################Tilt compensated heading#########################
     ####################################################################
     #Normalize accelerometer raw values.
+
+
     accXnorm = ACCx/math.sqrt(ACCx * ACCx + ACCy * ACCy + ACCz * ACCz)
     accYnorm = ACCy/math.sqrt(ACCx * ACCx + ACCy * ACCy + ACCz * ACCz)
 
@@ -214,4 +224,3 @@ while True:
 
 
     #slow program down a bit, makes the output more readable
-    #time.sleep(.)
