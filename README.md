@@ -1,8 +1,5 @@
 # ISR18
 
-## PCB Planned Wiring Diagram
-
-
 ## Perf Board Wiring Diagram
 
 ![image](https://github.com/VT-HPS/ISR18/blob/main/Pictures/HPS%20Perfboard%20Wiring%20Diagram.png)
