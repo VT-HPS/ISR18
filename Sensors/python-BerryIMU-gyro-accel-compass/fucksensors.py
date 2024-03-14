@@ -108,7 +108,7 @@ while True:
     #print(ACCx, ACCy, ACCz, GYRx, GYRy, GYRz)
 
     if (ACCx + ACCy + ACCz == 0) or (GYRx + GYRy + GYRz == 0):
-       print("One of the sensors had a fucky wucky. We're going to try that again.")
+       #print("One of the sensors had a fucky wucky. We're going to try that again.")
        time.sleep(0.1)
        continue
     
@@ -213,6 +213,7 @@ while True:
 
     ##################### END Tilt Compensation ########################
 
+    outputString = "\n"
 
     if 1:                       #Change to '0' to stop showing the angles from the accelerometer
        outputString += "#  ACCX Angle %5.2f ACCY Angle %5.2f  #  " % (AccXangle, AccYangle)
@@ -227,8 +228,8 @@ while True:
         outputString +="\t# HEADING %5.2f  tiltCompensatedHeading %5.2f #" % (heading,tiltCompensatedHeading)
 
 
-    print(outputString, end="\r")
-
+    print(outputString, end='')
+    
 
 
     #slow program down a bit, makes the output more readable
