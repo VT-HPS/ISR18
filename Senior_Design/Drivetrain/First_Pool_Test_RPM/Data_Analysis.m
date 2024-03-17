@@ -67,7 +67,9 @@ for ii = 1:length(data_sets)
             plot(data3_time(10:end), RPM{3})
             ylabel('RPM')
             title(d(jj).name)
-            legend('Sensor 1', 'Sensor 2', 'Sensor 3')
+            %legend('Sensor 1', 'Sensor 2', 'Sensor 3')
+            legend('Sprocket1 Sensor', 'Sprocket2 Sensor', 'Prop Sensor')
+
             hold off
 
 

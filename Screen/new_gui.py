@@ -59,7 +59,7 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.heading_canvas.pack(pady=10)
 
         # Schedule the update_random_values function to be called every second
-        #self.after(1000, self.update_random_values)
+        self.after(1000, self.update_random_values)
 
     def update_random_values(self):
         # Generate random speed, depth, and heading values
