@@ -41,7 +41,7 @@ with open("battery_data.txt", "w") as file:
             plt.xticks(rotation=45)
             plt.tight_layout()
             plt.draw()
-            time.sleep(1)  # Pause for 1 second between updates
+            plt.pause(1)  # Pause for 1 second between updates
 
     except KeyboardInterrupt:
         # Save the final plot when interrupted by the user
