@@ -2,7 +2,6 @@ import time
 import board
 import adafruit_ina260
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FuncFormatter
 
 i2c = board.I2C()  # uses board.SCL and board.SDA
 ina260 = adafruit_ina260.INA260(i2c)
@@ -16,8 +15,8 @@ with open("battery_data.txt", "w") as file:
     file.write("Timestamp (s), Current (mA), Voltage (V), Power (mW)\n")
     start_time = time.time()  # Record the start time
 
-    try:
-        while True:
+    while True:
+        try:
             # Append current timestamp and measurements to respective lists
             timestamp = time.time() - start_time
             current = ina260.current
@@ -43,7 +42,8 @@ with open("battery_data.txt", "w") as file:
             plt.draw()
             plt.pause(1)  # Pause for 1 second between updates
 
-    except KeyboardInterrupt:
-        # Save the final plot when interrupted by the user
-        plt.savefig('voltage_plot.png')
-        print("Program stopped by user. Saving final plot as 'voltage_plot.png'.")
+        except KeyboardInterrupt:
+            # Save the final plot when interrupted by the user
+            plt.savefig('voltage_plot.png')
+            print("Program stopped by user. Saving final plot as 'voltage_plot.png'.")
+            break
