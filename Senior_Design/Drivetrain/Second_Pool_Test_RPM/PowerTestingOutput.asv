@@ -101,8 +101,8 @@ while toc <= duration
             else
                 RPM1 = NaN;
             end
-            if (length(temp2Times) > 10)
-            RPM2 = 10*(60/(temp2Times(end) - temp2Times(end-9)));
+            if (length(temp2Times) > 3)
+            RPM2 = 3*(60/(temp2Times(end) - temp2Times(end-2)));
             else
                 RPM2 = NaN;
             end
