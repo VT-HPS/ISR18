@@ -233,6 +233,18 @@ while True:
 
     print(outputString, end='')
     
+    def log_sensor_values():
+    ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure = read_sensor_values()
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open("sensor_data.txt", "a") as f:
+        f.write(f"Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure\n")
+        f.write(f"{timestamp}, {ACCx}, {ACCy}, {ACCz}, {GYRx}, {GYRy}, {GYRz}, {MAGx}, {MAGy}, {MAGz}, {pressure}\n")
+    print("Sensor data logged.")
+
+    # Wait for button press and log sensor values when pressed
+    log_button.wait_for_press()
+    log_sensor_values()
+    
 
 
     #slow program down a bit, makes the output more readable
