@@ -57,12 +57,12 @@ magXmax =  0
 magYmax =  0
 magZmax =  0
 '''
-magXmin = -1762
-magYmin = -2534
-magZmin = 0
-magXmax = 622
-magYmax = 928
-magZmax = 6871
+magXmin = -2234
+magYmin = -2752
+magZmin = 2217
+magXmax = 494
+magYmax = 335
+magZmax = 5374
 
 '''
 Here is an example:

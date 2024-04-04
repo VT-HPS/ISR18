@@ -39,9 +39,6 @@ channel = AnalogIn(ads, ADS.P0)
 button = Button(4, False)
 # Loop to read the analog inputs continually
 
-# Define a button for logging data
-log_button = Button(27)
-
 RAD_TO_DEG = 57.29578
 M_PI = 3.14159265358979323846
 G_GAIN = 0.070  # [deg/s/LSB]  If you change the dps for gyro, you need to update this value accordingly
