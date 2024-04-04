@@ -40,12 +40,13 @@ channel = AnalogIn(ads, ADS.P0)
 button_pin = 4
 button = Button(button_pin)
 
+# Define the log button pin
+log_button_pin = 27
+log_button = Button(log_button_pin)
+
 # Initialize variables for button press capture
 button_pressed = False
 button_press_time = None
-
-# Log button presses
-log_button = Button(27)
 
 data = []
 
@@ -86,6 +87,14 @@ while True:
     else:
         button_pressed = False
         button_press_time = None
+
+    # Read log button press
+    if log_button.is_pressed:
+        # Record data when log button is pressed
+        data.append({
+            'time': datetime.datetime.now(),
+            # Add other sensor data here if needed
+        })
 
     # time.sleep(0.5)
     
