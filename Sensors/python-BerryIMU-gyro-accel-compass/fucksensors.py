@@ -96,6 +96,18 @@ IMU.initIMU()       #Initialise the accelerometer, gyroscope and compass
 
 a = datetime.datetime.now()
 
+def read_sensor_values():
+    ACCx = IMU.readACCx()
+    ACCy = IMU.readACCy()
+    ACCz = IMU.readACCz()
+    GYRx = IMU.readGYRx()
+    GYRy = IMU.readGYRy()
+    GYRz = IMU.readGYRz()
+    pressure = channel.value / 1023 * 5
+    MAGx = IMU.readMAGx()
+    MAGy = IMU.readMAGy()
+    MAGz = IMU.readMAGz()
+    return ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure
 
 
 while True:
