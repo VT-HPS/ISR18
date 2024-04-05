@@ -4,7 +4,7 @@ from typing import Tuple
 Functions to retrieve starting input values.
 """
 
-def get_init_gain(dimension: str, filename: str = "init_val.txt") -> tuple[float, float]:
+def get_init_gain(dimension: str, filename: str = "init_val.txt") -> Tuple[float, float]:
     """
     This function parses init_val and returns initial gain values along the input dimension.
 
@@ -32,7 +32,7 @@ def get_init_gain(dimension: str, filename: str = "init_val.txt") -> tuple[float
                 print ("Invalid dimension parameter.")
                 return None
 
-            return Kp, Kd
+            return (Kp, Kd)
         
     except FileNotFoundError:
         print("File not found.")
