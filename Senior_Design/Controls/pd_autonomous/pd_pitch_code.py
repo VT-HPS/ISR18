@@ -47,7 +47,7 @@ def main_loop(data_stream):
 
         fin_angle = erradj.pd_controller_action(Kp_pitch, Kd_pitch, error, derror)
 
-        print(fin_angle)
+        # print(fin_angle)
         pwm.set_PWM_dutycycle(PWM_PIN, erradj.fin_angle_to_dc(fin_angle))
         
         prev_error = error

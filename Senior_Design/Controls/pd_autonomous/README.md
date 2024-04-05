@@ -14,6 +14,8 @@ Kp represents the gain of proportional control, while Kd represents the gain of 
 
 Derivative, in this use case, is simply the change in values between iterations.
 
+We may want to adjust our pd_controller_action() function to convert linear differences in error to a polar fin in a more robust way. 
+
 ## Values (Storage & Retrieval):
 
 Initial values are stored in init_val.txt, separated by commas according to the following format:
