@@ -149,28 +149,19 @@ for header in headers:
 while True:
     #time.sleep(0.5)
     
-    ACCx = IMU.readACCx()
-    ACCy = IMU.readACCy()
-    ACCz = IMU.readACCz()
-    GYRx = IMU.readGYRx()
-    GYRy = IMU.readGYRy()
-    GYRz = IMU.readGYRz()
+    ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure = read_sensor_values()
 
-    #print(ACCx, ACCy, ACCz, GYRx, GYRy, GYRz)
-
-    if (ACCx + ACCy + ACCz == 0) or (GYRx + GYRy + GYRz == 0):
-       #print("One of the sensors had a fucky wucky. We're going to try that again.")
-       time.sleep(0.1)
-       continue
-    
-    pressure = channel.value / 1023 * 5
-    #print("\nPressure: ", pressure, "Button Value: ", button.value)
-
-    #Read the accelerometer,gyroscope and magnetometer values
-    MAGx = IMU.readMAGx()
-    MAGy = IMU.readMAGy()
-    MAGz = IMU.readMAGz()
-
+    # Subtract adjusted values from sensor readings
+    ACCx -= ACCx_adjusted
+    ACCy -= ACCy_adjusted
+    ACCz -= ACCz_adjusted
+    GYRx -= GYRx_adjusted
+    GYRy -= GYRy_adjusted
+    GYRz -= GYRz_adjusted
+    pressure -= pressure_adjusted
+    MAGx -= MAGx_adjusted
+    MAGy -= MAGy_adjusted
+    MAGz -= MAGz_adjusted
 
     #Apply compass calibration
     MAGx -= (magXmin + magXmax) /2
