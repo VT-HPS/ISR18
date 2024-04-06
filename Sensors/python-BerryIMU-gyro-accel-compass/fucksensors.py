@@ -138,6 +138,13 @@ print("Adjusted Sensor Values:")
 for adjusted_value in adjusted_values:
     print(adjusted_value)
 
+# Subtract adjusted values from themselves to reset them to 0
+for header in headers:
+    if header != "Timestamp":
+        original_name = header.split("_")[0]
+        adjusted_name = f"{original_name}_adjusted"
+        exec(f"{adjusted_name} -= {adjusted_name}")
+
 while True:
     #time.sleep(0.5)
     
