@@ -120,6 +120,24 @@ def log_sensor_values():
 log_button.wait_for_press()
 log_sensor_values()
 
+# Read the data from the logged sensor values and create adjusted variables
+with open("sensor_data.txt", "r") as f:
+    lines = f.readlines()
+    headers = lines[0].strip().split(", ")
+    values = lines[1].strip().split(", ")
+    adjusted_values = []
+    for header, value in zip(headers, values):
+        if header != "Timestamp":
+            original_name = header.split("_")[0]
+            adjusted_name = f"{original_name}_adjusted"
+            exec(f"{adjusted_name} = {value}")
+            adjusted_values.append(f"{adjusted_name}: {value}")
+
+# Print the adjusted variables
+print("Adjusted Sensor Values:")
+for adjusted_value in adjusted_values:
+    print(adjusted_value)
+
 while True:
     #time.sleep(0.5)
     
@@ -254,6 +272,5 @@ while True:
 
     print(outputString, end='')
     
-
 
     #slow program down a bit, makes the output more readable
