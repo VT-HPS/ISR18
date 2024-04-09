@@ -1,0 +1,5 @@
+Code To Do (Wyatt)
+
+Add Current Sensor to code (INA 260)
+Add RPM sensors to code (essentially buttons, GPIO pins 23 and 24)
+Add Pressure Sensors to code (using analog-to-digital convertor (I2C) module (ADS1115) on pins A0 and A1 of the module)
