@@ -26,38 +26,18 @@ import busio
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 from gpiozero import Button
-import adafruit_ina260
-from matplotlib import pyplot as plt
-
 # Initialize the I2C interface
 i2c = busio.I2C(board.SCL, board.SDA)
-ina260 = adafruit_ina260.INA260(i2c)
 
 # Create an ADS 1115 object
 ads = ADS.ADS1115(i2c)
 
 # Define the analog input channel
-channel = AnalogIn(ads, ADS.P0)
+channel = AnalogIn(ads, ADS.P0, ADS.P1)
 
 
 button = Button(4, False)
 # Loop to read the analog inputs continually
-
-# Define a button for logging data
-log_button = Button(26)
-
-# Battery Values
-warning_voltage = 11.5  # warn the user when voltage drops below this
-shutoff_voltage = 11  # shutoff or sternly warn when the voltage drops below this
-
-# Constants
-sample_time_delay = 1  # read every 1 second
-voltage_sample_size = 10  # store and check last 10 voltage readings
-
-# Initialize lists to store data
-time_data = []
-voltage_data = [0] * voltage_sample_size  # Initialize with zeros
-voltage_data_index = 0
 
 RAD_TO_DEG = 57.29578
 M_PI = 3.14159265358979323846
@@ -114,98 +94,32 @@ IMU.initIMU()       #Initialise the accelerometer, gyroscope and compass
 a = datetime.datetime.now()
 
 
-def read_sensor_values():
+
+while True:
+    #time.sleep(0.5)
+
     ACCx = IMU.readACCx()
     ACCy = IMU.readACCy()
     ACCz = IMU.readACCz()
     GYRx = IMU.readGYRx()
     GYRy = IMU.readGYRy()
     GYRz = IMU.readGYRz()
+
+    #print(ACCx, ACCy, ACCz, GYRx, GYRy, GYRz)
+
+    if (ACCx + ACCy + ACCz == 0) or (GYRx + GYRy + GYRz == 0):
+       #print("One of the sensors had a fucky wucky. We're going to try that again.")
+       time.sleep(0.1)
+       continue
+
     pressure = channel.value / 1023 * 5
+    #print("\nPressure: ", pressure, "Button Value: ", button.value)
+
+    #Read the accelerometer,gyroscope and magnetometer values
     MAGx = IMU.readMAGx()
     MAGy = IMU.readMAGy()
     MAGz = IMU.readMAGz()
-    return ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure
 
-def log_sensor_values():
-    ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure = read_sensor_values()
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open("sensor_data.txt", "a") as f:
-        f.write(f"Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure\n")
-        f.write(f"{timestamp}, {ACCx}, {ACCy}, {ACCz}, {GYRx}, {GYRy}, {GYRz}, {MAGx}, {MAGy}, {MAGz}, {pressure}\n")
-        print("Sensor data logged.")
-
-def check_for_low_battery(voltage_data):
-    for voltage in voltage_data:
-        if voltage > warning_voltage:
-            return False
-    return True
-
-def check_for_dead_battery(voltage_data):
-    for voltage in voltage_data:
-        if voltage > shutoff_voltage:
-            return False
-    return True
-
-def low_battery_warning():
-    print("Hey man your battery is low")
-
-def dead_battery_warning():
-    print("your battery is dead bro")
-
-
-log_button.wait_for_press()
-log_sensor_values()
-
-# Read the data from the logged sensor values and create adjusted variables
-with open("sensor_data.txt", "r") as f:
-    lines = f.readlines()
-    headers = lines[0].strip().split(", ")
-    values = lines[1].strip().split(", ")
-    adjusted_values = []
-    for header, value in zip(headers, values):
-        if header != "Timestamp":
-            original_name = header.split("_")[0]
-            adjusted_name = f"{original_name}_adjusted"
-            exec(f"{adjusted_name} = {value}")
-            adjusted_values.append(f"{adjusted_name}: {value}")
-
-# Print the adjusted variables
-print("Adjusted Sensor Values:")
-for adjusted_value in adjusted_values:
-    print(adjusted_value)
-
-# Subtract adjusted values from themselves to reset them to 0
-for header in headers:
-    if header != "Timestamp":
-        original_name = header.split("_")[0]
-        adjusted_name = f"{original_name}_adjusted"
-        exec(f"{adjusted_name} -= {adjusted_name}")
-
-while True:
-    voltage_data[voltage_data_index] = ina260.voltage
-    voltage_data_index = (voltage_data_index + 1) % voltage_sample_size
-        
-    if check_for_low_battery(voltage_data):
-        low_battery_warning()
-        
-    if check_for_dead_battery(voltage_data):
-        dead_battery_warning()
-    #time.sleep(0.5)
-    
-    ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure = read_sensor_values()
-
-    # Subtract adjusted values from sensor readings
-    ACCx -= ACCx_adjusted
-    ACCy -= ACCy_adjusted
-    ACCz -= ACCz_adjusted
-    GYRx -= GYRx_adjusted
-    GYRy -= GYRy_adjusted
-    GYRz -= GYRz_adjusted
-    pressure -= Pressure_adjusted
-    MAGx -= MAGx_adjusted
-    MAGy -= MAGy_adjusted
-    MAGz -= MAGz_adjusted
 
     #Apply compass calibration
     MAGx -= (magXmin + magXmax) /2
@@ -225,10 +139,11 @@ while True:
     rate_gyr_z =  GYRz * G_GAIN
 
 
-    #Calculate the angles from the gyro.  
-    gyroXangle=rate_gyr_x*LP
-    gyroYangle=rate_gyr_y*LP
-    gyroZangle=rate_gyr_z*LP
+    #Calculate the angles from the gyro.
+    gyroXangle+=rate_gyr_x*LP
+    gyroYangle+=rate_gyr_y*LP
+    gyroZangle+=rate_gyr_z*LP
+
 
     #Convert Accelerometer values to degrees
     AccXangle =  (math.atan2(ACCy,ACCz)*RAD_TO_DEG)
@@ -288,6 +203,7 @@ while True:
 
 
 
+
     #Calculate tilt compensated heading
     tiltCompensatedHeading = 180 * math.atan2(magYcomp,magXcomp)/M_PI
 
@@ -310,8 +226,12 @@ while True:
 
     if 1:                       #Change to '0' to stop  showing the heading
         outputString +="\t# HEADING %5.2f  tiltCompensatedHeading %5.2f #" % (heading,tiltCompensatedHeading)
-    
     if 1:
         outputString +="\t# PRESSURE %5.2f#" % (pressure)
 
+
     print(outputString, end='')
+
+
+
+    #slow program down a bit, makes the output more readable

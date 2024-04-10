@@ -52,5 +52,5 @@ try:
 except KeyboardInterrupt:
     # Save the final plot when interrupted by the user
     # Assuming you're planning to plot the voltage data at some point
-    # plt.savefig('voltage_plot.png')  # You need to import matplotlib.pyplot as plt
+    plt.savefig('voltage_plot.png')  # You need to import matplotlib.pyplot as plt
     print("Program stopped by user. Saving final plot as 'voltage_plot.png'.")
