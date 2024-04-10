@@ -59,6 +59,21 @@ time_data = []
 voltage_data = [0] * voltage_sample_size  # Initialize with zeros
 voltage_data_index = 0
 
+# Define a button for each RPM sensor
+brpm1 = Button(23)
+brpm2 = Button(24)
+
+# Define states for each button
+prevState1 =  0
+prevState2 = 0
+
+prevTime1 = time.time()
+prevTime2 = time.time()
+
+rpm1 = 0
+rpm2 = 0
+
+
 RAD_TO_DEG = 57.29578
 M_PI = 3.14159265358979323846
 G_GAIN = 0.070  # [deg/s/LSB]  If you change the dps for gyro, you need to update this value accordingly
@@ -191,6 +206,25 @@ while True:
         
     if check_for_dead_battery(voltage_data):
         dead_battery_warning()
+
+    currentState1 = brpm1.value
+    if prevState1 != currentState1:
+        if currentState1 == 1:
+            duration = time.time() - prevTime1
+            rpm1 = (60 / duration)
+            prevTime1 = time.time()
+            print(rpm1)
+    prevState1 = currentState1
+
+    currentState2 = brpm2.value
+    if prevState2 != currentState2:
+        if currentState2 == 1:
+            duration = time.time() - prevTime2
+            rpm2 = (60 / duration)
+            prevTime2 = time.time()
+            print(rpm2)
+    prevState2 = currentState2
+
     #time.sleep(0.5)
     
     ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure = read_sensor_values()
@@ -313,5 +347,8 @@ while True:
     
     if 1:
         outputString +="\t# PRESSURE %5.2f#" % (pressure)
+
+    if 1:
+        outputString +="\t# RPM1 %5.2f RPM2 %5.2f#" % (rpm1,rpm2)
 
     print(outputString, end='')
