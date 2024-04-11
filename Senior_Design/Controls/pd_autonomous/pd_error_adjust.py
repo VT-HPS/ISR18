@@ -37,11 +37,11 @@ def calculate_error_pitch(
     - The derivative of the error
     """
     # Weightings directly alter how much error along depth and angle_pitch contribute to error
-    w_de = 0.01
+    w_de = 0.01 # TODO: adjust these weightings
     w_pe = 0.01
 
     depth_error = w_de * (desired_depth - depth)
-    angle_pitch_error = w_pe * (desired_angle_pitch - angle_pitch)
+    angle_pitch_error = w_pe * (desired_angle_pitch - angle_pitch) # TODO: nonlinear transformation
 
     error = depth_error + angle_pitch_error
     derror = error - previous_error
@@ -75,7 +75,7 @@ def adjust_pd_params(
     - The new derivative gain (Kd)
     """
     # Weighting directly alters the rate at which the system adjusts Kp and Kd in response to error
-    learning_rate = 0.01  
+    learning_rate = 0.01 # TODO: adjust learning rate to be reasonable against Kp and Kd values
 
     Kp_new = Kp + (learning_rate * error)
     Kd_new = Kd + (learning_rate * derror)
@@ -102,10 +102,13 @@ def pd_controller_action(
     Returns:
     - The angle to which the fin should be set to error-correct
     """
-    control_action = (Kp * error) + (Kd * derror)
+    weighted_error = (Kp * error) + (Kd * derror)
+
+    # Transforming simple weighted error into the angle
+    control_action = ((22 / 0.2652) * (weighted_error - 0.143169)) - 15 # TODO: apply nonlinear transformation function
+                                                                        # or, at least, readjust weightings according to adjusted values
 
     fin_angle = max(-15, min(15, control_action))
-
     return fin_angle
 
 

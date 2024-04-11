@@ -18,6 +18,9 @@ def get_init_gain(dimension: str, filename: str = "init_val.txt") -> Tuple[float
     """
     try:
         with open(filename, "r") as init_val:
+            # Ignore header
+            init_val.readline()
+
             # Tokenize init_val
             values = init_val.readline().strip().split(',')
 
@@ -59,6 +62,9 @@ def get_init_desired(dimension: str, filename: str = "init_val.txt") -> float | 
     """
     try:
         with open(filename, "r") as init_val:
+            # Ignore header
+            init_val.readline()
+            
             # Tokenize init_val
             values = init_val.readline().strip().split(',')
 
@@ -78,3 +84,32 @@ def get_init_desired(dimension: str, filename: str = "init_val.txt") -> float | 
     except ValueError:
         print("Error processing file. Please check the file format.")
         return None
+
+
+def write_out(
+    Kp: float,
+    Kd: float,
+    dimension: str
+) -> None:
+    """
+    Appends new Kp/Kd values out to:
+        * out_val_pitch.txt     if writing "pitch" data
+        * out_val_yaw.txt       if writing "yaw" data
+
+    Format is:
+        Kp, Kd
+
+    Note that data is appended to the end.
+    """
+    # Set valid dimension filename
+    if (dimension not in ["pitch", "yaw"]):
+        raise ValueError(f"Invalid dimension to write along: {dimension}")
+    filename = f"out_val_{dimension}.txt"
+
+    # Append values to the end of filename
+    try:
+        with open(filename, "a") as out_file:
+            out_file.write(f"{Kp}, {Kd}\n")
+
+    except:
+        print(f"Error writing values out to {filename}.")

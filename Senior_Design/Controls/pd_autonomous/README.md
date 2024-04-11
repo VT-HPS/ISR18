@@ -1,6 +1,10 @@
 # Autonomous PD Controller
 An autonomous control system that factors proportional and derivative action.
-IMPORTANT: Read "Establishing Values" section.
+
+# TODO:
+* Adjust values/transformations to use better physics.
+    * Read "Establishing Values" and "Transformations" for a starting point on inputting some physics knowledge into this soft-hands computer science code.
+* Implement data streams.
 
 ## Structure:
 
@@ -16,6 +20,14 @@ Derivative, in this use case, is simply the change in values between iterations.
 
 We may want to adjust our pd_controller_action() function to convert linear differences in error to a polar fin in a more robust way. 
 
+## Transformations:
+
+(See pd_error_adjust.py.)
+
+Right now, error in angle and depth are converted into a one-dimensional (scalar) error value linearly.  That is, the difference between current and desired values is weighted before being summed.  A more sophisticated approach would be to transform errors.  In particular, angle errors may be adjusted using cos to weight errors close to zero more.
+
+Moreover, we may want to transform error using some nonlinear transformation function.  At present, this transformation function is weighted to transform this error onto the naively-set test values in the old if-statement code.
+
 ## Values (Storage & Retrieval):
 
 Initial values are stored in init_val.txt, separated by commas according to the following format:
@@ -27,10 +39,11 @@ Desired values should not be altered.  They should always be:
 * desired_angle_pitch = 0
 * desired_angle_yaw = 0
 
-Periodically (every 1 / WRITE_PERIOD cycles), the system outputs the current Kp and Kd for each dimension.  WRITE_PERIOD is currently set to 200, meaning that this print-out occurs every 200 cycles (we estimate every 2 seconds).  Increase this value to save computational resources, decrease it to increase the rate at which we save our values.  Currently, writing is done by printing out the values.  TODO: complete a write_out function that writes these values to a text file instead.
+Periodically (every 1 / WRITE_PERIOD cycles), the system outputs the current Kp and Kd for each dimension.  WRITE_PERIOD is currently set to 200, meaning that this print-out occurs every 200 cycles (we estimate every 2 seconds).  Increase this value to save computational resources, decrease it to increase the rate at which we save our values.  Currently, writing is done by printing out the values.
 
 ## Establishing Values:
 
+(See pd_error_adjust.py.)
 The user must establish the following values for proper usage...
 
 ### PITCH:

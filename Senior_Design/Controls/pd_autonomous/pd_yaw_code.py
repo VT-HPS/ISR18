@@ -1,10 +1,10 @@
-import pd_input as input
+import pd_io as io
 
 # Testing -- ignoreme
-print(input.get_init_desired("pitch"))
-print(input.get_init_desired("yaw"))
-print(input.get_init_desired("wrong"))
+print(io.get_init_desired("pitch"))
+print(io.get_init_desired("yaw"))
+print(io.get_init_desired("wrong"))
 print()
-print(input.get_init_gain("pitch"))
-print(input.get_init_gain("yaw"))
-print(input.get_init_gain("wrong"))
+print(io.get_init_gain("pitch"))
+print(io.get_init_gain("yaw"))
+print(io.get_init_gain("wrong"))
