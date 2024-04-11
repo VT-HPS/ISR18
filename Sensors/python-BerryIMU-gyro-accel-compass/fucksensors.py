@@ -36,9 +36,9 @@ ina260 = adafruit_ina260.INA260(i2c)
 # Create an ADS 1115 object
 ads = ADS.ADS1115(i2c)
 
-# Define the analog input channel
-channel = AnalogIn(ads, ADS.P0)
-
+# Define the analog input channels
+channel1 = AnalogIn(ads, ADS.P0)
+channel2 = AnalogIn(ads, ADS.P1)
 
 button = Button(4, False)
 # Loop to read the analog inputs continually
@@ -136,18 +136,19 @@ def read_sensor_values():
     GYRx = IMU.readGYRx()
     GYRy = IMU.readGYRy()
     GYRz = IMU.readGYRz()
-    pressure = channel.value / 1023 * 5
+    pressure1 = channel1.value / 1023 * 5
+    pressure2 = channel2.value / 1023 * 5
     MAGx = IMU.readMAGx()
     MAGy = IMU.readMAGy()
     MAGz = IMU.readMAGz()
-    return ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure
+    return ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2
 
 def log_sensor_values():
-    ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure = read_sensor_values()
+    ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2 = read_sensor_values()
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with open("sensor_data.txt", "a") as f:
-        f.write(f"Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure\n")
-        f.write(f"{timestamp}, {ACCx}, {ACCy}, {ACCz}, {GYRx}, {GYRy}, {GYRz}, {MAGx}, {MAGy}, {MAGz}, {pressure}\n")
+        f.write(f"Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure1, Pressure2\n")
+        f.write(f"{timestamp}, {ACCx}, {ACCy}, {ACCz}, {GYRx}, {GYRy}, {GYRz}, {MAGx}, {MAGy}, {MAGz}, {pressure1}, {pressure2}\n")
         print("Sensor data logged.")
 
 def check_for_low_battery(voltage_data):
@@ -227,7 +228,7 @@ while True:
 
     #time.sleep(0.5)
     
-    ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure = read_sensor_values()
+    ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2 = read_sensor_values()
 
     # Subtract adjusted values from sensor readings
     ACCx -= ACCx_adjusted
@@ -236,7 +237,8 @@ while True:
     GYRx -= GYRx_adjusted
     GYRy -= GYRy_adjusted
     GYRz -= GYRz_adjusted
-    pressure -= Pressure_adjusted
+    pressure1 -= Pressure1_adjusted
+    pressure2 -= Pressure2_adjusted
     MAGx -= MAGx_adjusted
     MAGy -= MAGy_adjusted
     MAGz -= MAGz_adjusted
