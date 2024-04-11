@@ -49,6 +49,27 @@ def calculate_error_pitch(
     return (error, derror)
 
 
+def calculate_error_yaw(
+    desired_angle_yaw: float,
+    angle_yaw: float,
+    prev_error: float
+) -> Tuple[float, float]:
+    """
+    This is the sister function to calulcate_error_pitch.  That is, it functions the same,
+    but without consideration to depth.
+
+    Changes made to one function should be considered in changes to the other.
+
+    See sister documentation for more info.
+    """
+    w_ye = 0.01 # TODO: adjust this weighting
+
+    error = w_ye * (desired_angle_yaw - angle_yaw)
+    derror = error - prev_error
+
+    return (error, derror)
+
+
 def adjust_pd_params(
     Kp: float,
     Kd: float,
@@ -83,7 +104,7 @@ def adjust_pd_params(
     return Kp_new, Kd_new
 
 
-def pd_controller_action(
+def pd_controller_action_pitch(
     Kp: float,
     Kd: float,
     error: float,
@@ -111,6 +132,24 @@ def pd_controller_action(
     fin_angle = max(-15, min(15, control_action))
     return fin_angle
 
+
+def pd_controller_action_yaw(
+    Kp: float,
+    Kd: float,
+    error: float,
+    derror: float
+) -> float:
+    """
+    Sister function to pd_controller_action_pitch.
+
+    This function uses different transformation functions.
+    """
+    weighted_error = (Kp * error) + (Kd * derror)
+
+    control_action = (30 / .28) * weighted_error
+
+    fin_angle = max(-15, min(15, control_action))
+    return fin_angle
 
 
 """

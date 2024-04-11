@@ -50,7 +50,7 @@ def main_loop(data_stream):
             io.write_out(Kp_pitch, Kd_pitch, "pitch")
 
         # Transform change to fin angle
-        fin_angle = erradj.pd_controller_action(Kp_pitch, Kd_pitch, error, derror)
+        fin_angle = erradj.pd_controller_action_pitch(Kp_pitch, Kd_pitch, error, derror)
 
         print(fin_angle)
         # pwm.set_PWM_dutycycle(PWM_PIN, erradj.fin_angle_to_dc(fin_angle))
