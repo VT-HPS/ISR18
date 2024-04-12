@@ -347,7 +347,7 @@ while True:
         outputString +="\t# HEADING %5.2f  tiltCompensatedHeading %5.2f #" % (heading,tiltCompensatedHeading)
     
     if 1:
-        outputString +="\t# PRESSURE %5.2f#" % (pressure)
+        outputString +="\t# PRESSURE1 %5.2f    PRESSURE2 %5.2f#" % (pressure1, pressure2)
 
     if 1:
         outputString +="\t# RPM1 %5.2f RPM2 %5.2f#" % (rpm1,rpm2)

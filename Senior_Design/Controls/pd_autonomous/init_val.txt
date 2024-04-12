@@ -1,1 +1,2 @@
-1, 2, 3, 4, 5, 6, 7, 8, 9
+Kp_pitch,   Kd_pitch,   desired_depth,  desired_angle_pitch,    Kp_yaw, Kd_yaw, desired_angle_yaw
+1,          0.1,        15,             0,                      1,      0.1,    0
