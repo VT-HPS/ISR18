@@ -27,7 +27,12 @@ import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 from gpiozero import Button
 import adafruit_ina260
-from matplotlib import pyplot as plt
+import socket
+
+host = 'localhost'  # Change this to the IP of the control program if it's running on a different machine
+port = 65432  # Choose an available port
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((host, port))
 
 # Initialize the I2C interface
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -354,3 +359,5 @@ while True:
         outputString +="\t# RPM1 %5.2f RPM2 %5.2f#" % (rpm1,rpm2)
 
     print(outputString, end='')
+    s.sendall(str(outputString).encode())
+    time.sleep(0.1)  # Adjust the sleep time as needed
