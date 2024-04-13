@@ -123,6 +123,9 @@ CFangleY = 0.0
 pressure1 = 0.0
 pressure2 = 0.0
 
+# Initialize the pressure adjusted variables
+pressure1_adjusted = 0
+pressure2_adjusted = 0
 
 IMU.detectIMU()     #Detect if BerryIMU is connected.
 if(IMU.BerryIMUversion == 99):
@@ -236,22 +239,13 @@ while True:
     ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2 = read_sensor_values()
 
     # Subtract adjusted values from sensor readings
-    ACCx -= ACCx_adjusted
-    ACCy -= ACCy_adjusted
-    ACCz -= ACCz_adjusted
-    GYRx -= GYRx_adjusted
-    GYRy -= GYRy_adjusted
-    GYRz -= GYRz_adjusted
     pressure1 -= pressure1_adjusted
     pressure2 -= pressure2_adjusted
-    MAGx -= MAGx_adjusted
-    MAGy -= MAGy_adjusted
-    MAGz -= MAGz_adjusted
 
-    #Apply compass calibration
-    MAGx -= (magXmin + magXmax) /2
-    MAGy -= (magYmin + magYmax) /2
-    MAGz -= (magZmin + magZmax) /2
+    # Apply compass calibration
+    MAGx -= (magXmin + magXmax) / 2
+    MAGy -= (magYmin + magYmax) / 2
+    MAGz -= (magZmin + magZmax) / 2
 
     ##Calculate loop Period(LP). How long between Gyro Reads
     b = datetime.datetime.now() - a
@@ -260,77 +254,73 @@ while True:
     outputString = "Loop Time %5.2f " % ( LP )
 
 
-    #Convert Gyro raw to degrees per second
+    # Convert Gyro raw to degrees per second
     rate_gyr_x =  GYRx * G_GAIN
     rate_gyr_y =  GYRy * G_GAIN
     rate_gyr_z =  GYRz * G_GAIN
 
 
-    #Calculate the angles from the gyro.  
-    gyroXangle=rate_gyr_x*LP
-    gyroYangle=rate_gyr_y*LP
-    gyroZangle=rate_gyr_z*LP
+    # Calculate the angles from the gyro.  
+    gyroXangle = rate_gyr_x * LP
+    gyroYangle = rate_gyr_y * LP
+    gyroZangle = rate_gyr_z * LP
 
-    #Convert Accelerometer values to degrees
-    AccXangle =  (math.atan2(ACCy,ACCz)*RAD_TO_DEG)
-    AccYangle =  (math.atan2(ACCz,ACCx)+M_PI)*RAD_TO_DEG
+    # Convert Accelerometer values to degrees
+    AccXangle =  (math.atan2(ACCy, ACCz) * RAD_TO_DEG)
+    AccYangle =  (math.atan2(ACCz, ACCx) + M_PI) * RAD_TO_DEG
 
-    #convert the values to -180 and +180
+    # convert the values to -180 and +180
     if AccYangle > 90:
         AccYangle -= 270.0
     else:
         AccYangle += 90.0
 
+    # Complementary filter used to combine the accelerometer and gyro values.
+    CFangleX = AA * (CFangleX + rate_gyr_x * LP) + (1 - AA) * AccXangle
+    CFangleY = AA * (CFangleY + rate_gyr_y * LP) + (1 - AA) * AccYangle
 
+    # Calculate heading
+    heading = 180 * math.atan2(MAGy, MAGx) / M_PI
 
-    #Complementary filter used to combine the accelerometer and gyro values.
-    CFangleX=AA*(CFangleX+rate_gyr_x*LP) +(1 - AA) * AccXangle
-    CFangleY=AA*(CFangleY+rate_gyr_y*LP) +(1 - AA) * AccYangle
-
-
-
-    #Calculate heading
-    heading = 180 * math.atan2(MAGy,MAGx)/M_PI
-
-    #Only have our heading between 0 and 360
+    # Only have our heading between 0 and 360
     if heading < 0:
         heading += 360
 
     ####################################################################
     ###################Tilt compensated heading#########################
     ####################################################################
-    #Normalize accelerometer raw values.
+    # Normalize accelerometer raw values.
 
 
-    accXnorm = ACCx/math.sqrt(ACCx * ACCx + ACCy * ACCy + ACCz * ACCz)
-    accYnorm = ACCy/math.sqrt(ACCx * ACCx + ACCy * ACCy + ACCz * ACCz)
+    accXnorm = ACCx / math.sqrt(ACCx * ACCx + ACCy * ACCy + ACCz * ACCz)
+    accYnorm = ACCy / math.sqrt(ACCx * ACCx + ACCy * ACCy + ACCz * ACCz)
 
 
-    #Calculate pitch and roll
+    # Calculate pitch and roll
     pitch = math.asin(accXnorm)
-    roll = -math.asin(accYnorm/math.cos(pitch))
+    roll = -math.asin(accYnorm / math.cos(pitch))
 
 
-    #Calculate the new tilt compensated values
-    #The compass and accelerometer are orientated differently on the the BerryIMUv1, v2 and v3.
-    #This needs to be taken into consideration when performing the calculations
+    # Calculate the new tilt compensated values
+    # The compass and accelerometer are orientated differently on the the BerryIMUv1, v2 and v3.
+    # This needs to be taken into consideration when performing the calculations
 
-    #X compensation
-    if(IMU.BerryIMUversion == 1 or IMU.BerryIMUversion == 3):            #LSM9DS0 and (LSM6DSL & LIS2MDL)
-        magXcomp = MAGx*math.cos(pitch)+MAGz*math.sin(pitch)
-    else:                                                                #LSM9DS1
-        magXcomp = MAGx*math.cos(pitch)-MAGz*math.sin(pitch)
+    # X compensation
+    if IMU.BerryIMUversion == 1 or IMU.BerryIMUversion == 3:            # LSM9DS0 and (LSM6DSL & LIS2MDL)
+        magXcomp = MAGx * math.cos(pitch) + MAGz * math.sin(pitch)
+    else:                                                                # LSM9DS1
+        magXcomp = MAGx * math.cos(pitch) - MAGz * math.sin(pitch)
 
-    #Y compensation
-    if(IMU.BerryIMUversion == 1 or IMU.BerryIMUversion == 3):            #LSM9DS0 and (LSM6DSL & LIS2MDL)
-        magYcomp = MAGx*math.sin(roll)*math.sin(pitch)+MAGy*math.cos(roll)-MAGz*math.sin(roll)*math.cos(pitch)
-    else:                                                                #LSM9DS1
-        magYcomp = MAGx*math.sin(roll)*math.sin(pitch)+MAGy*math.cos(roll)+MAGz*math.sin(roll)*math.cos(pitch)
+    # Y compensation
+    if IMU.BerryIMUversion == 1 or IMU.BerryIMUversion == 3:            # LSM9DS0 and (LSM6DSL & LIS2MDL)
+        magYcomp = MAGx * math.sin(roll) * math.sin(pitch) + MAGy * math.cos(roll) - MAGz * math.sin(roll) * math.cos(pitch)
+    else:                                                                # LSM9DS1
+        magYcomp = MAGx * math.sin(roll) * math.sin(pitch) + MAGy * math.cos(roll) + MAGz * math.sin(roll) * math.cos(pitch)
 
 
 
-    #Calculate tilt compensated heading
-    tiltCompensatedHeading = 180 * math.atan2(magYcomp,magXcomp)/M_PI
+    # Calculate tilt compensated heading
+    tiltCompensatedHeading = 180 * math.atan2(magYcomp, magXcomp) / M_PI
 
     if tiltCompensatedHeading < 0:
         tiltCompensatedHeading += 360
