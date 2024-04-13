@@ -151,7 +151,8 @@ def read_sensor_values():
 def log_sensor_values():
     ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2 = read_sensor_values()
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open("sensor_data.txt", "a") as f:
+    file_path = os.path.join("python-BerryIMU-gyro-accel-compass", "sensor_data.txt")
+    with open(file_path, "a") as f:
         f.write(f"Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2\n")
         f.write(f"{timestamp}, {ACCx}, {ACCy}, {ACCz}, {GYRx}, {GYRy}, {GYRz}, {MAGx}, {MAGy}, {MAGz}, {pressure1}, {pressure2}\n")
         print("Sensor data logged.")
@@ -204,6 +205,8 @@ for header in headers:
         exec(f"{adjusted_name} -= {adjusted_name}")
 
 while True:
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     voltage_data[voltage_data_index] = ina260.voltage
     voltage_data_index = (voltage_data_index + 1) % voltage_sample_size
         
