@@ -339,7 +339,7 @@ while True:
 
     iteration_count += 1
     if iteration_count == 100:
-        with open("sensor_data.txt", "a") as f:
+        with open("sensor_datalog.txt", "a") as f:
             for data_entry in data_to_log:
                 f.write(data_entry)
         print("Data logged.")
