@@ -1,2 +1,40 @@
 Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure
-2024-04-04 13:20:14, 53, 179, -3984, 13, -13, -10, -1128, -1711, 4393, -0.009775171065493646
+2024-04-05 23:17:16, -920, -96, -3867, 16, -17, -48, -1256, -474, 2990, -0.004887585532746823
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure
+2024-04-05 23:17:50, -858, -136, -3853, 3, -11, 4, -1254, -410, 2981, 0.0
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure
+2024-04-05 23:31:43, -931, -67, -3876, 12, 7, -31, -1280, -459, 2940, 0.0
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure
+2024-04-05 23:49:12, -1011, -72, -3868, 15, -24, -10, -1331, -338, 3048, 0.0
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure
+2024-04-05 23:49:55, -1037, -90, -3858, 6, -36, -23, -1324, -336, 3076, 0.0
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure
+2024-04-05 23:50:44, -1024, -87, -3860, 5, -13, 3, -1322, -318, 3050, -0.004887585532746823
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure
+2024-04-05 23:51:21, -517, -114, -3956, 3, -23, -19, -1262, -1014, 3127, 0.0
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure
+2024-04-05 23:51:44, -546, -86, -3959, 15, -31, -9, -973, -124, 3141, 0.0
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure
+2024-04-05 23:53:00, -524, -83, -3966, 13, -18, 4, -994, -116, 3099, 0.0
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure
+2024-04-05 23:55:48, -541, -85, -3947, 16, -13, -12, -990, -148, 3118, -0.004887585532746823
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure
+2024-04-05 23:56:21, 361, -2340, 3501, 8, -11, -21, 644, -1906, 1757, 0.0
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure
+2024-04-06 00:00:42, 0, 0, 0, 0, 0, 0, -1442, -4116, 4438, 0.0
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure
+2024-04-06 00:01:00, 244, -3770, 1787, 3, 31, -14, -698, -2100, 2227, 0.0
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure
+2024-04-06 00:02:08, -607, -178, 4241, 11, -3, -20, -1143, -1077, 1107, 0.0
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure
+2024-04-06 00:08:17, -518, -283, 4222, 0, -17, -18, -1130, -1095, 1188, 0.0
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure
+2024-04-09 23:16:00, 9, -241, -3946, -14, -29, -26, -1112, -630, 4165, 43.04496578690127
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure1, Pressure2
+2024-04-13 00:18:53, -297, -767, -3890, -17, -9, -24, -971, -846, 3866, 42.94721407624634, 42.83968719452591
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2
+2024-04-13 00:19:54, -287, -767, -3885, 25, -12, -26, -1020, -845, 3836, 42.65395894428153, 42.93255131964809
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2
+2024-04-13 00:20:21, -282, -768, -3886, 19, 2, -7, -1021, -841, 3827, 42.732160312805476, 43.01564027370479
+Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2
+2024-04-13 00:20:55, -350, -752, -3882, 1, -1, -42, -1022, -850, 3807, 42.971652003910066, 43.09384164222874

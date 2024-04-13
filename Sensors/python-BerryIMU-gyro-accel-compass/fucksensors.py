@@ -72,6 +72,9 @@ prevTime2 = time.time()
 rpm1 = 0
 rpm2 = 0
 
+# Code for logging data every 100 iterations
+iteration_count = 0
+data_to_log = []
 
 RAD_TO_DEG = 57.29578
 M_PI = 3.14159265358979323846
@@ -116,6 +119,10 @@ gyroYangle = 0.0
 gyroZangle = 0.0
 CFangleX = 0.0
 CFangleY = 0.0
+pressure1 = 0.0
+pressure2 = 0.0
+pressure1_adjusted = 0
+pressure2_adjusted = 0
 
 
 IMU.detectIMU()     #Detect if BerryIMU is connected.
@@ -145,8 +152,9 @@ def read_sensor_values():
 def log_sensor_values():
     ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2 = read_sensor_values()
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open("sensor_data.txt", "a") as f:
-        f.write(f"Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure1, Pressure2\n")
+    file_path = os.path.join("/home/hps/ISR18/Sensors/python-BerryIMU-gyro-accel-compass", "sensor_data.txt")
+    with open(file_path, "a") as f:
+        f.write(f"Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2\n")
         f.write(f"{timestamp}, {ACCx}, {ACCy}, {ACCz}, {GYRx}, {GYRy}, {GYRz}, {MAGx}, {MAGy}, {MAGz}, {pressure1}, {pressure2}\n")
         print("Sensor data logged.")
 
@@ -198,6 +206,8 @@ for header in headers:
         exec(f"{adjusted_name} -= {adjusted_name}")
 
 while True:
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     voltage_data[voltage_data_index] = ina260.voltage
     voltage_data_index = (voltage_data_index + 1) % voltage_sample_size
         
@@ -236,8 +246,8 @@ while True:
     GYRx -= GYRx_adjusted
     GYRy -= GYRy_adjusted
     GYRz -= GYRz_adjusted
-    pressure1 -= Pressure1_adjusted
-    pressure2 -= Pressure2_adjusted
+    pressure1 -= pressure1_adjusted
+    pressure2 -= pressure2_adjusted
     MAGx -= MAGx_adjusted
     MAGy -= MAGy_adjusted
     MAGz -= MAGz_adjusted
@@ -330,6 +340,19 @@ while True:
         tiltCompensatedHeading += 360
 
 
+    sensor_data = f"{timestamp}, {ACCx}, {ACCy}, {ACCz}, {GYRx}, {GYRy}, {GYRz}, {MAGx}, {MAGy}, {MAGz}, {pressure1}, {pressure2}, {rpm1}, {rpm2}, {heading}, {tiltCompensatedHeading}\n"
+    data_to_log.append(sensor_data)
+
+    iteration_count += 1
+    if iteration_count == 100:
+        with open("sensor_datalog.txt", "a") as f:
+            for data_entry in data_to_log:
+                f.write(data_entry)
+        print("Data logged.")
+        iteration_count = 0
+        data_to_log = []
+
+
     ##################### END Tilt Compensation ########################
 
     outputString = "\n"
@@ -353,3 +376,7 @@ while True:
         outputString +="\t# RPM1 %5.2f RPM2 %5.2f#" % (rpm1,rpm2)
 
     print(outputString, end='')
+    time.sleep(10)
+
+# TAKE DATA SAMPLE EVER TIME BIG LOOP RUN. COLLECT IN STRING, WRITE THAT STRING INTO A TXT EVERY 60 seconds.
+# Write a function that will collect data into a string and send it to a Python string data steam
