@@ -120,6 +120,8 @@ gyroYangle = 0.0
 gyroZangle = 0.0
 CFangleX = 0.0
 CFangleY = 0.0
+pressure1 = 0.0
+pressure2 = 0.0
 
 
 IMU.detectIMU()     #Detect if BerryIMU is connected.
