@@ -377,7 +377,7 @@ while True:
         outputString +="\t# RPM1 %5.2f RPM2 %5.2f#" % (rpm1,rpm2)
 
     print(outputString, end='')
-
+    time.sleep(10)
 
 # TAKE DATA SAMPLE EVER TIME BIG LOOP RUN. COLLECT IN STRING, WRITE THAT STRING INTO A TXT EVERY 60 seconds.
 # Write a function that will collect data into a string and send it to a Python string data steam
