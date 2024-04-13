@@ -122,6 +122,8 @@ CFangleX = 0.0
 CFangleY = 0.0
 pressure1 = 0.0
 pressure2 = 0.0
+pressure1_adjusted = 0
+pressure2_adjusted = 0
 
 
 IMU.detectIMU()     #Detect if BerryIMU is connected.
