@@ -152,7 +152,7 @@ def log_sensor_values():
     ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2 = read_sensor_values()
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with open("sensor_data.txt", "a") as f:
-        f.write(f"Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure1, Pressure2\n")
+        f.write(f"Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2\n")
         f.write(f"{timestamp}, {ACCx}, {ACCy}, {ACCz}, {GYRx}, {GYRy}, {GYRz}, {MAGx}, {MAGy}, {MAGz}, {pressure1}, {pressure2}\n")
         print("Sensor data logged.")
 
