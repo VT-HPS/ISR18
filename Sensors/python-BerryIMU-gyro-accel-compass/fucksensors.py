@@ -240,8 +240,8 @@ while True:
     GYRx -= GYRx_adjusted
     GYRy -= GYRy_adjusted
     GYRz -= GYRz_adjusted
-    pressure1 -= Pressure1_adjusted
-    pressure2 -= Pressure2_adjusted
+    pressure1 -= pressure1_adjusted
+    pressure2 -= pressure2_adjusted
     MAGx -= MAGx_adjusted
     MAGy -= MAGy_adjusted
     MAGz -= MAGz_adjusted
