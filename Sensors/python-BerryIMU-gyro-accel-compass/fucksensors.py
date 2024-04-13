@@ -151,7 +151,7 @@ def read_sensor_values():
 def log_sensor_values():
     ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2 = read_sensor_values()
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    file_path = os.path.join("python-BerryIMU-gyro-accel-compass", "sensor_data.txt")
+    file_path = os.path.join("/home/hps/ISR18/Sensors/python-BerryIMU-gyro-accel-compass", "sensor_data.txt")
     with open(file_path, "a") as f:
         f.write(f"Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2\n")
         f.write(f"{timestamp}, {ACCx}, {ACCy}, {ACCz}, {GYRx}, {GYRy}, {GYRz}, {MAGx}, {MAGy}, {MAGz}, {pressure1}, {pressure2}\n")
