@@ -36,6 +36,8 @@ def joe_rpm():
                 duration = time_secs - rpm1_10_time_entries[0]
                 rpm1_10_time_entries.append(time_secs)
                 rpm1 = (60 / duration) * (len(rpm1_10_time_entries) - 1)
+                timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                data_to_log += f"{timestamp}, {rpm1}, {rpm2}"
         rpm1_prev_state = rpm1_state
 
         if rpm2_state != rpm2_prev_state:
@@ -46,10 +48,9 @@ def joe_rpm():
                 duration = time_secs - rpm2_10_time_entries[0]
                 rpm2_10_time_entries.append(time_secs)
                 rpm2 = (60 / duration) * (len(rpm2_10_time_entries) - 1)
+                timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                data_to_log += f"{timestamp}, {rpm1}, {rpm2}"
         rpm2_prev_state = rpm2_state
-
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        data_to_log += f"{timestamp}, {rpm1}, {rpm2}"
         
         if (time.time() - log_time >= 10):
             with open(f"bulk_rpm_data.csv", "a") as f:
