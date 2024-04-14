@@ -37,7 +37,7 @@ def joe_rpm():
                 rpm1_10_time_entries.append(time_secs)
                 rpm1 = (60 / duration) * (len(rpm1_10_time_entries) - 1)
                 timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                data_to_log += f"{timestamp}, {rpm1}, {rpm2}"
+                data_to_log += f"Sensor1, {timestamp}"
         rpm1_prev_state = rpm1_state
 
         if rpm2_state != rpm2_prev_state:
@@ -49,7 +49,7 @@ def joe_rpm():
                 rpm2_10_time_entries.append(time_secs)
                 rpm2 = (60 / duration) * (len(rpm2_10_time_entries) - 1)
                 timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                data_to_log += f"{timestamp}, {rpm1}, {rpm2}"
+                data_to_log += f"Sensor2, {timestamp}"
         rpm2_prev_state = rpm2_state
         
         if (time.time() - log_time >= 10):
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     sensor_file_path = os.path.join("/home/hps/ISR18/Combined_Stuff/Data_Logging_Files", f"bulk_rpm_data.csv")
 
     with open(sensor_file_path, "a") as f:
-        f.write(f"Timestamp, RPM1, RPM2\n")
+        f.write(f"RPM Number, Timestamp\n")
         print("Sensor data logged.")
     
     joe_rpm()
