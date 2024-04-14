@@ -3,47 +3,23 @@ import datetime
 import os
 from gpiozero import Button
 
-# RPM Buttons
-brpm1 = Button(23)
-brpm2 = Button(24)
-
-rpm1_prev_state = 0
-rpm2_prev_state = 0
-
-prevTime1 = time.time()
-prevTime2 = time.time()
-
-rpm1 = 0
-rpm2 = 0
-
-log_time = time.time()
-
-def monitor_RPM():
-    global rpm1, rpm2
-    while True:
-        rpmCurrentState1 = brpm1.value
-        if rpmPrevState1 != rpmCurrentState1:
-            if rpmCurrentState1 == 1:
-                duration = time.time() - prevTime1
-                rpm1 = (60 / duration)
-                prevTime1 = time.time()
-                print(rpm1)
-        rpmPrevState1 = rpmCurrentState1
-
-        rpmCurrentState2 = brpm2.value
-        if rpmPrevState2 != rpmCurrentState2:
-            if rpmCurrentState2 == 1:
-                duration = time.time() - prevTime2
-                rpm2 = (60 / duration)
-                prevTime2 = time.time()
-                print(rpm2)
-        rpmPrevState2 = rpmCurrentState2
-
-def get_rpm():
-    return rpm1, rpm2
 
 def joe_rpm():
     moving_average_count = 5
+    # RPM Buttons
+    brpm1 = Button(23)
+    brpm2 = Button(24)
+
+    rpm1_prev_state = 0
+    rpm2_prev_state = 0
+
+    prevTime1 = time.time()
+    prevTime2 = time.time()
+
+    rpm1 = 0
+    rpm2 = 0
+
+    log_time = time.time()
     rpm1_10_time_entries = [time.time()]
     rpm2_10_time_entries = [time.time()]
     data_to_log = []
@@ -56,7 +32,7 @@ def joe_rpm():
             if rpm1_state == 1:
                 time_secs = time.time()
                 if (len(rpm1_10_time_entries) >= moving_average_count):
-                    rpm1_10_time_entries.remove(0)
+                    rpm1_10_time_entries.pop(0)
                 duration = time_secs - rpm1_10_time_entries[0]
                 rpm1_10_time_entries.append(time_secs)
                 rpm1 = (60 / duration) * (len(rpm1_10_time_entries) - 1)
@@ -66,7 +42,7 @@ def joe_rpm():
             if rpm2_state == 1:
                 time_secs = time.time()
                 if (len(rpm2_10_time_entries) >= moving_average_count):
-                    rpm2_10_time_entries.remove(0)
+                    rpm2_10_time_entries.pop(0)
                 duration = time_secs - rpm2_10_time_entries[0]
                 rpm2_10_time_entries.append(time_secs)
                 rpm2 = (60 / duration) * (len(rpm2_10_time_entries) - 1)
