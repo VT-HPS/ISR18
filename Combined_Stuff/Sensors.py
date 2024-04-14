@@ -50,30 +50,48 @@ expect_voltage = 12.6
 warning_voltage = 11.5  # warn the user when voltage drops below this
 shutoff_voltage = 11  # shutoff or sternly warn when the voltage drops below this
 
+MIN_PRESSURE = 0 # psi
+MAX_PRESSURE = 500 # psi
+
+WATER_DENSITY = 62.4 # lb/ft^3
+WATER_DENSITY_METRIC = 997 # kg /m^3
+PSI_TO_PASCALS = 6894.76
+
+# Previous calibration assumed that on a 0 - 1023 digital input, the depth of water would be 0 - 1023
+# inches. In other words, they perfectly scaled. The ADC used here is not 0 - 1023, so we need to scale
+# this value.
+ADC_HIGH = 2**16 - 1 # Upper limit of 0 to X scale of digital input from analog to digital convertor
+DIGITAL_TO_INCHES = (2**10 - 1) / ADC_HIGH # Scales to inches based on previous calibration
+
+
+def digital_to_inches(digital_input):
+    return DIGITAL_TO_INCHES * digital_input
+
 class Sensors():
     def __init__(self, pressure_channel1, pressure_channel2):
         channel1 = pressure_channel1
         channel2 = pressure_channel2
+        yaw = 0
+        prev_yaw_time = time.time()
+        pitch = 0
+        prev_pitch_time = time.time()
     
-    def read_sensor_vals(self):
-        ACCx = IMU.readACCx()
-        ACCy = IMU.readACCy()
-        ACCz = IMU.readACCz()
-        GYRx = IMU.readGYRx()
-        GYRy = IMU.readGYRy()
-        GYRz = IMU.readGYRz()
-        pressure1 = self.channel1.value / 1023 * 5
-        pressure2 = self.channel2.value / 1023 * 5
-        MAGx = IMU.readMAGx()
-        MAGy = IMU.readMAGy()
-        MAGz = IMU.readMAGz()
-        return ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2
+    def pitch_calculation(self, gyrz):
+        cur_time = time.time()
+        dt = cur_time - self.prev_pitch_time
+        prev_pitch_time = cur_time
+        pitch += dt * gyrz
+        
 
-    def pitch_calculation(self):
-        pass
+    def yaw_calculation(self, gyry):
+        cur_time = time.time()
+        dt = cur_time - self.prev_yaw_time
+        prev_yaw_time = cur_time
+        yaw += dt * gyry
 
-    def yaw_calculation(self):
-        pass
+    def reset_values(self):
+        yaw = 0
+        pitch = 0
 
     def battery_testing(self, voltage_data):
         for voltage in voltage_data:
@@ -85,6 +103,41 @@ class Sensors():
                 print("warning")
         
         print("shutdown")
+        
+    # Input is a voltage reading
+    def depth_calculation(static_pressure_reading):
+        return digital_to_inches(static_pressure_reading) / 12 # output in feet
+
+    # Returns velocity in knots
+    def velocity_calculation(dyn_press_read, stat_press_read):
+        dyn_press_in = digital_to_inches(dyn_press_read) # inches of water
+        stat_press_in = digital_to_inches(stat_press_read) # inches of water
+
+        inches_to_pascals = WATER_DENSITY / 12**3 * 6895
+        dyn_press = dyn_press_in * inches_to_pascals
+        stat_press = stat_press_in * inches_to_pascals
+
+        velocity_m_per_s = math.sqrt( (2 / WATER_DENSITY_METRIC) * (dyn_press - stat_press))
+        m_per_s_to_knots = 1.94384449
+
+        return velocity_m_per_s * m_per_s_to_knots
             
-    def output_all_data_vals(self):
-        pass
+
+    def read_sensor_vals(self):
+        ACCx = IMU.readACCx()
+        ACCy = IMU.readACCy()
+        ACCz = IMU.readACCz()
+        GYRx = IMU.readGYRx()
+        GYRy = IMU.readGYRy()
+        GYRz = IMU.readGYRz()
+        dynamic_pressure_reading = self.channel1.value
+        static_pressure_reading = self.channel2.value
+        MAGx = IMU.readMAGx()
+        MAGy = IMU.readMAGy()
+        MAGz = IMU.readMAGz()
+        yaw = self.yaw_calculation(GYRy)
+        pitch = self.pitch_calculation(GYRz)
+        depth = self.depth_calculation(dynamic_pressure_reading, static_pressure_reading)
+        velocity = self.velocity_calculation(static_pressure_reading)
+ 
+        return ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, dynamic_pressure_reading, static_pressure_reading, yaw, pitch, depth, velocity
