@@ -14,7 +14,6 @@ import threading
 from .Servo import *
 import Sensors
 from .Autonomous_Reactive import *
-import rpm
 import Battery_Warning
 
 
@@ -113,10 +112,6 @@ def main():
     pwm_pitch.set_PWM_dutycycle(PWM_PITCH_PIN, fin_angle_to_dc(0))
     pwm_yaw.set_PWM_dutycycle(PWM_YAW_PIN, fin_angle_to_dc(0))
 
-    # RPM Thread
-    rpm_thread = threading.Thread(target=rpm.monitor_RPM)
-    rpm_thread.start()
-
     # Check Battery Voltage
     voltage_data = []
     for _ in range(10):
@@ -143,7 +138,7 @@ def create_run_log():
     sensor_file_path = os.path.join("/home/hps/ISR18/Combined_Stuff/Data_Logging_Files", f"sensor_data_run_{run_number}.csv")
 
     with open(sensor_file_path, "a") as f:
-        f.write(f"Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2, rpm1, rpm2, yaw, pitch, depth, velocity\n")
+        f.write(f"Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2, yaw, pitch, depth, velocity\n")
         print("Sensor data logged.")
 
 
@@ -162,7 +157,6 @@ def do_run():
     wait_button_pressed = False
     while not wait_button_pressed:
         ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2, yaw, pitch, depth, velocity = sensors.read_sensor_values()
-        rpm1, rpm2 = rpm.get_rpm()
         
         # current time - the last time the servos were adjusted >= 500 ms
         if time.time() - servo_time >= 0.5:
@@ -179,7 +173,8 @@ def do_run():
             servo_time = time.time()
 
         # log the sensor data to array
-        sensor_data = f"{timestamp}, {ACCx}, {ACCy}, {ACCz}, {GYRx}, {GYRy}, {GYRz}, {MAGx}, {MAGy}, {MAGz}, {pressure1}, {pressure2}, {rpm1}, {rpm2}, {yaw}, {pitch}, {depth}, {velocity}\n"
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        sensor_data = f"{timestamp}, {ACCx}, {ACCy}, {ACCz}, {GYRx}, {GYRy}, {GYRz}, {MAGx}, {MAGy}, {MAGz}, {pressure1}, {pressure2}, {yaw}, {pitch}, {depth}, {velocity}\n"
         data_to_log.append(sensor_data)
 
         # log to sensor data file every 10 seconds
@@ -193,6 +188,8 @@ def do_run():
     
         if wait_button.value == 1:
             wait_button_pressed = True
+
+    sensors.reset_values()
 
     run_number += 1
 
