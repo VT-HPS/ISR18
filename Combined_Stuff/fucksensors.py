@@ -1,66 +1,9 @@
-#!/usr/bin/python
-#
-#       This is the base code needed to get usable angles from a BerryIMU
-#       using a Complementary filter. The readings can be improved by
-#       adding more filters, E.g Kalman, Low pass, median filter, etc..
-#       See berryIMU.py for more advanced code.
-#
-#       The BerryIMUv1, BerryIMUv2 and BerryIMUv3 are supported
-#
-#       This script is python 2.7 and 3 compatible
-#
-#       Feel free to do whatever you like with this code.
-#       Distributed as-is; no warranty is given.
-#
-#       https://ozzmaker.com/berryimu/
 
-
-import time
-import math
-import IMU
-import datetime
-import os
-import sys
-import board
-import busio
-import adafruit_ads1x15.ads1115 as ADS
-from adafruit_ads1x15.analog_in import AnalogIn
-from gpiozero import Button
-import adafruit_ina260
-
-# Initialize the I2C interface
-i2c = busio.I2C(board.SCL, board.SDA)
-ina260 = adafruit_ina260.INA260(i2c)
-
-# Create an ADS 1115 object
-ads = ADS.ADS1115(i2c)
-
-# Define the analog input channels
-channel1 = AnalogIn(ads, ADS.P0)
-channel2 = AnalogIn(ads, ADS.P1)
-
-button = Button(4, False)
-# Loop to read the analog inputs continually
-
-# Define a button for logging data
-log_button = Button(26)
-
-# Battery Values
-warning_voltage = 11.5  # warn the user when voltage drops below this
-shutoff_voltage = 11  # shutoff or sternly warn when the voltage drops below this
-
-# Constants
-sample_time_delay = 1  # read every 1 second
-voltage_sample_size = 10  # store and check last 10 voltage readings
 
 # Initialize lists to store data
 time_data = []
 voltage_data = [0] * voltage_sample_size  # Initialize with zeros
 voltage_data_index = 0
-
-# Define a button for each RPM sensor
-brpm1 = Button(23)
-brpm2 = Button(24)
 
 # Define states for each button
 prevState1 =  0
@@ -73,43 +16,6 @@ rpm1 = 0
 rpm2 = 0
 
 
-RAD_TO_DEG = 57.29578
-M_PI = 3.14159265358979323846
-G_GAIN = 0.070  # [deg/s/LSB]  If you change the dps for gyro, you need to update this value accordingly
-AA =  0.40      # Complementary filter constant
-
-################# Compass Calibration values ############
-# Use calibrateBerryIMU.py to get calibration values
-# Calibrating the compass isnt mandatory, however a calibrated
-# compass will result in a more accurate heading values.
-'''
-magXmin =  0
-magYmin =  0
-magZmin =  0
-magXmax =  0
-magYmax =  0
-magZmax =  0
-'''
-magXmin = -1762
-magYmin = -2534
-magZmin = 0
-magXmax = 622
-magYmax = 928
-magZmax = 6871
-
-'''
-Here is an example:
-magXmin =  -1748
-magYmin =  -1025
-magZmin =  -1876
-magXmax =  959
-magYmax =  1651
-magZmax =  708
-Dont use the above values, these are just an example.
-'''
-############### END Calibration offsets #################
-
-
 
 gyroXangle = 0.0
 gyroYangle = 0.0
@@ -118,29 +24,7 @@ CFangleX = 0.0
 CFangleY = 0.0
 
 
-IMU.detectIMU()     #Detect if BerryIMU is connected.
-if(IMU.BerryIMUversion == 99):
-    print(" No BerryIMU found... exiting ")
-    sys.exit()
-IMU.initIMU()       #Initialise the accelerometer, gyroscope and compass
-
-
 a = datetime.datetime.now()
-
-
-def read_sensor_values():
-    ACCx = IMU.readACCx()
-    ACCy = IMU.readACCy()
-    ACCz = IMU.readACCz()
-    GYRx = IMU.readGYRx()
-    GYRy = IMU.readGYRy()
-    GYRz = IMU.readGYRz()
-    pressure1 = channel1.value / 1023 * 5
-    pressure2 = channel2.value / 1023 * 5
-    MAGx = IMU.readMAGx()
-    MAGy = IMU.readMAGy()
-    MAGz = IMU.readMAGz()
-    return ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2
 
 def log_sensor_values():
     ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2 = read_sensor_values()
@@ -149,24 +33,6 @@ def log_sensor_values():
         f.write(f"Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, Pressure1, Pressure2\n")
         f.write(f"{timestamp}, {ACCx}, {ACCy}, {ACCz}, {GYRx}, {GYRy}, {GYRz}, {MAGx}, {MAGy}, {MAGz}, {pressure1}, {pressure2}\n")
         print("Sensor data logged.")
-
-def check_for_low_battery(voltage_data):
-    for voltage in voltage_data:
-        if voltage > warning_voltage:
-            return False
-    return True
-
-def check_for_dead_battery(voltage_data):
-    for voltage in voltage_data:
-        if voltage > shutoff_voltage:
-            return False
-    return True
-
-def low_battery_warning():
-    print("Hey man your battery is low")
-
-def dead_battery_warning():
-    print("your battery is dead bro")
 
 
 log_button.wait_for_press()
