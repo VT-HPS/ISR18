@@ -24,7 +24,6 @@ import Battery_Warning
 
 log_time = time.time()
 
-RAD_TO_DEG = 57.29578
 G_GAIN = 0.070  # [deg/s/LSB]  If you change the dps for gyro, you need to update this value accordingly
 AA =  0.40      # Complementary filter constant
 
@@ -37,7 +36,7 @@ PWM_FREQ = 100
 CURRENT_FIN_ANGLE = 0
 MAX_FIN_ONE_DIR = 16.25
 
-IDEAL_DEPTH
+IDEAL_DEPTH = 6
 DEPTH_RAND_TRACK = 15
 DEPTH_READING_PLACEHOLDER = 15
 
@@ -130,9 +129,11 @@ def main():
         continue
 
     # start runs
-    while true:
-        create_run_log()
-        do_run()
+    try:
+        while True:
+            reset_loop()
+    finally:
+        cleanup()
     
     # Setup Datalogging
         
@@ -167,7 +168,7 @@ def do_run():
         if time.time() - servo_time >= 0.5:
             
             # autonomous function
-            set_pitch = pitch_auto_control(pitch, depth)
+            set_pitch = pitch_auto_control(pitch, depth, IDEAL_DEPTH)
             set_yaw = yaw_auto_control(yaw)
             
             # set servos
@@ -207,7 +208,6 @@ def reset_loop():
         log_time = time.time()
     
     create_run_log()
-    Sensors.depth_calculation()
     do_run()
     pass
 
@@ -223,5 +223,4 @@ def cleanup():
     pass
 
 if __name__ == "__main__":
-    pass
-    
+    main()
