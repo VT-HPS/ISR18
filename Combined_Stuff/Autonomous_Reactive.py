@@ -10,7 +10,10 @@ MAX_CONTROL_PITCH = 15 # Maximum angle of the pitch based control surfaces
 MAX_AUTO_PITCH_ANGLE = 15 # Maximum angle which we want to try to maintain auto controls, set 1 foot more expected
 
 # Deviation of ideal depth to consider alternative parameters (FT)
-IDEAL_DEPTH_DIFF = 2
+IDEAL_DEPTH_DIFF = 0
+
+def set_ideal_depth(depth):
+    IDEAL_DEPTH_DIFF = depth
 
 """
 Compute the pitch angle of the control surfaces given the current pitch angle

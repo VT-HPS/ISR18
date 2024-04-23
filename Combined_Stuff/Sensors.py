@@ -69,29 +69,29 @@ def digital_to_inches(digital_input):
 
 class Sensors():
     def __init__(self, pressure_channel1, pressure_channel2):
-        channel1 = pressure_channel1
-        channel2 = pressure_channel2
-        yaw = 0
-        prev_yaw_time = time.time()
-        pitch = 0
-        prev_pitch_time = time.time()
+        self.channel1 = pressure_channel1
+        self.channel2 = pressure_channel2
+        self.yaw = 0
+        self.prev_yaw_time = time.time()
+        self.pitch = 0
+        self.prev_pitch_time = time.time()
     
     def pitch_calculation(self, gyrz):
         cur_time = time.time()
         dt = cur_time - self.prev_pitch_time
-        prev_pitch_time = cur_time
-        pitch += dt * gyrz
+        self.prev_pitch_time = cur_time
+        self.pitch += dt * gyrz
         
 
     def yaw_calculation(self, gyry):
         cur_time = time.time()
         dt = cur_time - self.prev_yaw_time
-        prev_yaw_time = cur_time
-        yaw += dt * gyry
+        self.prev_yaw_time = cur_time
+        self.yaw += dt * gyry
 
     def reset_values(self):
-        yaw = 0
-        pitch = 0
+        self.yaw = 0
+        self.pitch = 0
 
     def battery_testing(self, voltage_data):
         for voltage in voltage_data:
@@ -105,11 +105,11 @@ class Sensors():
         print("shutdown")
         
     # Input is a voltage reading
-    def depth_calculation(static_pressure_reading):
+    def depth_calculation(self, static_pressure_reading):
         return digital_to_inches(static_pressure_reading) / 12 # output in feet
 
     # Returns velocity in knots
-    def velocity_calculation(dyn_press_read, stat_press_read):
+    def velocity_calculation(self, dyn_press_read, stat_press_read):
         dyn_press_in = digital_to_inches(dyn_press_read) # inches of water
         stat_press_in = digital_to_inches(stat_press_read) # inches of water
 
@@ -117,7 +117,7 @@ class Sensors():
         dyn_press = dyn_press_in * inches_to_pascals
         stat_press = stat_press_in * inches_to_pascals
 
-        velocity_m_per_s = math.sqrt( (2 / WATER_DENSITY_METRIC) * (dyn_press - stat_press))
+        velocity_m_per_s = math.sqrt( abs((2 / WATER_DENSITY_METRIC) * (dyn_press - stat_press)))
         m_per_s_to_knots = 1.94384449
 
         return velocity_m_per_s * m_per_s_to_knots
@@ -135,9 +135,9 @@ class Sensors():
         MAGx = IMU.readMAGx()
         MAGy = IMU.readMAGy()
         MAGz = IMU.readMAGz()
-        yaw = self.yaw_calculation(GYRy)
-        pitch = self.pitch_calculation(GYRz)
-        depth = self.depth_calculation(dynamic_pressure_reading, static_pressure_reading)
-        velocity = self.velocity_calculation(static_pressure_reading)
+        self.pitch_calculation(GYRy)
+        self.yaw_calculation(GYRz)
+        depth = self.depth_calculation(static_pressure_reading)
+        velocity = self.velocity_calculation(dynamic_pressure_reading, static_pressure_reading)
  
-        return ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, dynamic_pressure_reading, static_pressure_reading, yaw, pitch, depth, velocity
+        return ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, dynamic_pressure_reading, static_pressure_reading, self.yaw, self.pitch, depth, velocity

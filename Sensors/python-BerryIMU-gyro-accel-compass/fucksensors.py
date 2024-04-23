@@ -121,8 +121,9 @@ CFangleX = 0.0
 CFangleY = 0.0
 pressure1 = 0.0
 pressure2 = 0.0
-pressure1_adjusted = 0
-pressure2_adjusted = 0
+yaw = 0.0
+rpm1 = 0.0
+
 
 
 IMU.detectIMU()     #Detect if BerryIMU is connected.
@@ -177,7 +178,7 @@ def dead_battery_warning():
     print("your battery is dead bro")
 
 
-log_button.wait_for_press()
+#log_button.wait_for_press()
 log_sensor_values()
 
 # Read the data from the logged sensor values and create adjusted variables
@@ -376,7 +377,7 @@ while True:
         outputString +="\t# RPM1 %5.2f RPM2 %5.2f#" % (rpm1,rpm2)
 
     print(outputString, end='')
-    time.sleep(10)
+    time.sleep(1)
 
 # TAKE DATA SAMPLE EVER TIME BIG LOOP RUN. COLLECT IN STRING, WRITE THAT STRING INTO A TXT EVERY 60 seconds.
 # Write a function that will collect data into a string and send it to a Python string data steam

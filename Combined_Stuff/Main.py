@@ -11,9 +11,9 @@ from adafruit_ads1x15.analog_in import AnalogIn
 from gpiozero import Button
 import adafruit_ina260
 import threading
-from .Servo import *
-import Sensors
-from .Autonomous_Reactive import *
+from Servo import *
+from Sensors import Sensors
+from Autonomous_Reactive import *
 import Battery_Warning
 
 
@@ -21,7 +21,7 @@ import Battery_Warning
 #                               Variables                                  #
 ############################################################################
 
-log_time = time.time()
+LOG_TIME = time.time()
 
 G_GAIN = 0.070  # [deg/s/LSB]  If you change the dps for gyro, you need to update this value accordingly
 AA =  0.40      # Complementary filter constant
@@ -58,7 +58,7 @@ voltage_sample_size = 10  # store and check last 10 voltage readings
 
 # Code for logging data every 100 iterations
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-data_to_log = []
+DATA_TO_LOG = []
 
 # Initialize the I2C interface
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -72,7 +72,7 @@ channel1 = AnalogIn(ads, ADS.P0)
 channel2 = AnalogIn(ads, ADS.P1)
 
 # Define a button for wait and data logging
-wait_button = Button(26)
+wait_button = Button(25)
 
 # Set GPIO mode
 pwm_pitch = pigpio.pi()
@@ -91,7 +91,7 @@ pwm_yaw.set_PWM_frequency(PWM_PITCH_PIN, PWM_FREQ)
 pwm_yaw.set_PWM_range(PWM_PITCH_PIN, 100)
 
 # Test runs
-run_number = 0
+global run_number
 
 # Setup Sensor Class
 sensors = Sensors(channel1, channel2)
@@ -115,9 +115,10 @@ def main():
     # Check Battery Voltage
     voltage_data = []
     for _ in range(10):
-        voltage_data.append(sensors.read_sensor_vals())
+        voltage_data.append(sensors.read_sensor_vals()[9])
         
     sensors.battery_testing(voltage_data)
+    print("Battery safe")
 
     # Wait for button press
     while wait_button.value == 0:
@@ -135,9 +136,9 @@ def main():
 def create_run_log():
     
     # Define the file path with the run number
-    sensor_file_path = os.path.join("/home/hps/ISR18/Combined_Stuff/Data_Logging_Files", f"sensor_data_run_{run_number}.csv")
+    # sensor_file_path = os.path.join("/home/hps/ISR18/Combined_Stuff", f"sensor_data_run_{run_number}.csv")
 
-    with open(sensor_file_path, "a") as f:
+    with open(f"sensor_data_run_{run_number}.csv", "a") as f:
         f.write(f"Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2, yaw, pitch, depth, velocity\n")
         print("Sensor data logged.")
 
@@ -146,47 +147,53 @@ def create_run_log():
 # log_sensor_values()
 
 def do_run():
+    global DATA_TO_LOG
+    global LOG_TIME
+    global run_number
+    
     # Ensure button is no longer pressed
-    while wait_button.value == 1:
+    while wait_button.value == 0:
         continue
 
     #servo time for measuring adjustment timing
     servo_time = time.time()
+    set_ideal_depth(sensors.read_sensor_vals()[13])
 
     # start run loop
     wait_button_pressed = False
-    while not wait_button_pressed:
-        ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2, yaw, pitch, depth, velocity = sensors.read_sensor_values()
+    while True:
+        time.sleep(0.25)
+        ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2, yaw, pitch, depth, velocity = sensors.read_sensor_vals()
         
         # current time - the last time the servos were adjusted >= 500 ms
         if time.time() - servo_time >= 0.5:
             
             # autonomous function
-            set_pitch = pitch_auto_control(pitch, depth, IDEAL_DEPTH)
-            set_yaw = yaw_auto_control(yaw)
+            set_pitch = pitch_auto_control(0, depth, IDEAL_DEPTH)
+            set_yaw = yaw_auto_control(0)
             
             # set servos
-            pwm_pitch.set_PWM_dutycycle(PWM_PITCH_PIN, fin_angle_to_dc(set_pitch))
-            pwm_yaw.set_PWM_dutycycle(PWM_YAW_PIN, fin_angle_to_dc(set_yaw))
+            # pwm_pitch.set_PWM_dutycycle(PWM_PITCH_PIN, fin_angle_to_dc(set_pitch))
+            # pwm_yaw.set_PWM_dutycycle(PWM_YAW_PIN, fin_angle_to_dc(set_yaw))
 
             # reset servo time
-            servo_time = time.time()
+            # servo_time = time.time()
 
         # log the sensor data to array
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         sensor_data = f"{timestamp}, {ACCx}, {ACCy}, {ACCz}, {GYRx}, {GYRy}, {GYRz}, {MAGx}, {MAGy}, {MAGz}, {pressure1}, {pressure2}, {yaw}, {pitch}, {depth}, {velocity}\n"
-        data_to_log.append(sensor_data)
+        DATA_TO_LOG.append(sensor_data)
 
         # log to sensor data file every 10 seconds
-        if time.time() - log_time >= 10:
+        if time.time() - LOG_TIME >= 10:
             with open(f"sensor_data_run_{run_number}.csv", "a") as f:
-                for data_entry in data_to_log:
+                for data_entry in DATA_TO_LOG:
                     f.write(data_entry)
             print("Data logged.")
-            data_to_log = []
-            log_time = time.time()
-    
-        if wait_button.value == 1:
+            DATA_TO_LOG = []
+            LOG_TIME = time.time()
+
+        if wait_button.value == 0:
             wait_button_pressed = True
 
     sensors.reset_values()
@@ -196,28 +203,34 @@ def do_run():
 
 
 def reset_loop():
-    if time.time() - log_time < 10:
+    LOG_TIME = time.time()
+    global DATA_TO_LOG
+    if time.time() - LOG_TIME < 10:
         with open(f"sensor_data_run_{run_number}.csv", "a") as f:
-            for data_entry in data_to_log:
+            for data_entry in DATA_TO_LOG:
                 f.write(data_entry)
         print("Data logged.")
-        data_to_log = []
-        log_time = time.time()
+        DATA_TO_LOG = []
+        LOG_TIME = time.time()
     
     create_run_log()
     do_run()
     pass
 
 def cleanup():
+    global DATA_TO_LOG
     with open(f"sensor_data_run_{run_number}.csv", "a") as f:
-        for data_entry in data_to_log:
+        for data_entry in DATA_TO_LOG:
                 f.write(data_entry)
     print("Data logged.")
-    data_to_log = []
+    DATA_TO_LOG = []
 
     Battery_Warning.check_for_low_battery
 
     pass
 
 if __name__ == "__main__":
+    DATA_TO_LOG = []
+    LOG_TIME = time.time()
+    run_number = 0
     main()

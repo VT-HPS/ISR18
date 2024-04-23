@@ -12,11 +12,12 @@ GPIO.setup(GPIO_PIN, GPIO.OUT)
 pwm = GPIO.PWM(GPIO_PIN, 100)
 
 # Sleep time setting
-sleep_time = 3 
+sleep_time = 1
+pwm.start(15)
 
-try:
+while True:
     # Start PWM with a duty cycle of 21% (2100 microseconds)
-    pwm.start(21)
+    pwm.ChangeDutyCycle(21)
 
     # Wait for 5 seconds
     time.sleep(sleep_time)
@@ -28,12 +29,10 @@ try:
     time.sleep(sleep_time)
 
     # Change the duty cycle to 9% (900 microseconds)
-    pwm.ChangeDutyCycle(10)
+    pwm.ChangeDutyCycle(9)
+
+    time.sleep(sleep_time)
+    pwm.ChangeDutyCycle(15)
 
     # Wait for 5 seconds
     time.sleep(sleep_time)
-
-finally:
-    # Clean up GPIO
-    pwm.stop()
-    GPIO.cleanup()

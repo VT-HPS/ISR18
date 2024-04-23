@@ -36,21 +36,3 @@ def low_battery_warning():
 def dead_battery_warning():
     print("your battery is dead bro")
 
-try:
-    while True:
-        voltage_data[voltage_data_index] = ina260.voltage
-        voltage_data_index = (voltage_data_index + 1) % voltage_sample_size
-        
-        if check_for_low_battery(voltage_data):
-            low_battery_warning()
-        
-        if check_for_dead_battery(voltage_data):
-            dead_battery_warning()
-        
-        time.sleep(sample_time_delay)
-        
-except KeyboardInterrupt:
-    # Save the final plot when interrupted by the user
-    # Assuming you're planning to plot the voltage data at some point
-    plt.savefig('voltage_plot.png')  # You need to import matplotlib.pyplot as plt
-    print("Program stopped by user. Saving final plot as 'voltage_plot.png'.")
