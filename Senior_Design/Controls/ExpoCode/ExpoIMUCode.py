@@ -23,6 +23,13 @@ import IMU
 import datetime
 import os
 import sys
+import pigpio
+
+DEFAULT_SPEED = 0
+ANGLE_0_PWM = 850
+ANGLE_MAX_PWM = 2150
+TRAVEL_RANGE_ANGLE = 130
+PWM_FREQ = 100
 
 
 RAD_TO_DEG = 57.29578
@@ -148,6 +155,18 @@ def kalmanFilterX ( accAngle, gyroRate, DT):
 
     return KFangleX
 
+# Function that takes an angle and figures outs the approriate pwm in microseconds
+def map_angle_to_pwm(angle):
+    return math.floor((((ANGLE_MAX_PWM - ANGLE_0_PWM) / TRAVEL_RANGE_ANGLE) * angle) + ANGLE_0_PWM)
+
+# Function that determines duty cycle based on pwm signal and current frequency
+def pwm_to_dc(pwm_time):
+    HZ_US = 1000000 # Conversion from 1 hertz to 1000000 microseconds
+    return (pwm_time / (HZ_US / PWM_FREQ)) * 100
+
+def map_value(value, from_min, from_max, to_min, to_max):
+    # Map value from one range to another
+    return (value - from_min) * (to_max - to_min) / (from_max - from_min) + to_min
 
 IMU.detectIMU()     #Detect if BerryIMU is connected.
 if(IMU.BerryIMUversion == 99):
@@ -165,8 +184,8 @@ kalmanY = 0.0
 
 a = datetime.datetime.now()
 
-while True:
-
+def readData():
+    global a, gyroXangle, gyroYangle, gyroZangle, CFangleX, CFangleY, IMU, AA, RAD_TO_DEG, M_PI, magXmin, magXmax, magYmin, magYmax, magZmin, magZmax, G_GAIN
 
     #Read the accelerometer,gyroscope and magnetometer values
     ACCx = IMU.readACCx()
@@ -179,12 +198,10 @@ while True:
     MAGy = IMU.readMAGy()
     MAGz = IMU.readMAGz()
 
-
     #Apply compass calibration
     MAGx -= (magXmin + magXmax) /2
     MAGy -= (magYmin + magYmax) /2
     MAGz -= (magZmin + magZmax) /2
-
 
     ##Calculate loop Period(LP). How long between Gyro Reads
     b = datetime.datetime.now() - a
@@ -192,20 +209,15 @@ while True:
     LP = b.microseconds/(1000000*1.0)
     outputString = "Loop Time %5.2f " % ( LP )
 
-
-
     #Convert Gyro raw to degrees per second
     rate_gyr_x =  GYRx * G_GAIN
     rate_gyr_y =  GYRy * G_GAIN
     rate_gyr_z =  GYRz * G_GAIN
 
-
     #Calculate the angles from the gyro.
     gyroXangle+=rate_gyr_x*LP
     gyroYangle+=rate_gyr_y*LP
     gyroZangle+=rate_gyr_z*LP
-
-
 
    #Convert Accelerometer values to degrees
     AccXangle =  (math.atan2(ACCy,ACCz)*RAD_TO_DEG)
@@ -231,12 +243,8 @@ while True:
     heading = 180 * math.atan2(MAGy,MAGx)/M_PI
 
     #Only have our heading between 0 and 360
-    if heading < 0:
-        heading += 360
-
-
-
-
+    # if heading < 0:
+    #    heading += 360
 
     ####################################################################
     ###################Tilt compensated heading#########################
@@ -277,32 +285,76 @@ while True:
     if tiltCompensatedHeading < 0:
         tiltCompensatedHeading += 360
 
-    
+    return heading, pitch, roll
+
+heading, pitch, roll = readData()
+headingStart = heading
+rollStart = roll
+pitchStart = pitch
+
+# Servo Setup
+# Initialize pigpio
+pi = pigpio.pi()
+
+# Define GPIO pins connected to the servos
+servo_gpio_pin_1 = 19
+servo_gpio_pin_2 = 18
+
+# Set servo ranges (MAX_min: 800, MAX_max: 2200)
+servo_min_pulse = 900
+servo_max_pulse = 2100
+
+# Set PWM frequency (Hz)
+pwm_frequency = 100
+
+# Sleep time
+sleep_time = 0.01
+
+# Configure PWM frequency for both servos
+pi.set_PWM_frequency(servo_gpio_pin_1, pwm_frequency)
+pi.set_PWM_frequency(servo_gpio_pin_2, pwm_frequency)
+
+prev_time = time.time()
+
+try:
+    while True:
+        heading, pitch, roll = readData()
+        heading = heading - headingStart
+        if heading <= -180:
+            heading += 360
+        if heading >= 180:
+            heading -= 360
+        roll = roll - rollStart
+        pitch = pitch - pitchStart
+        outputString = "# Heading: %5.2f   roll: %5.2f    pitch: %5.2f" % (heading, roll, pitch)
+        
+        curr_time = time.time()
+        
+        mapped_pitch_pulse = map_value(roll, -60, 60, servo_min_pulse, servo_max_pulse)
+        mapped_yaw_pulse = map_value(heading, -60, 60, servo_min_pulse, servo_max_pulse)
+        
+        if mapped_pitch_pulse < servo_min_pulse:
+            mapped_pitch_pulse = servo_min_pulse
+        elif mapped_pitch_pulse > servo_max_pulse:
+            mapped_pitch_pulse = servo_max_pulse
+            
+        if mapped_yaw_pulse < servo_min_pulse:
+            mapped_yaw_pulse = servo_min_pulse
+        elif mapped_yaw_pulse > servo_max_pulse:
+            mapped_yaw_pulse = servo_max_pulse
+        
+        if curr_time - prev_time > 0.2:
+            print(outputString)
+            print(mapped_pitch_pulse, mapped_yaw_pulse)
+            pi.set_servo_pulsewidth(servo_gpio_pin_1, mapped_pitch_pulse)
+            pi.set_servo_pulsewidth(servo_gpio_pin_2, mapped_yaw_pulse)
+            prev_time = curr_time
+
+except KeyboardInterrupt:
+    # Ctrl+C pressed, cleanup GPIO
+    pi.set_PWM_dutycycle(servo_gpio_pin_1, 0)  # Stop PWM for servo 1
+    pi.set_PWM_dutycycle(servo_gpio_pin_2, 0)  # Stop PWM for servo 2
+    pi.stop()  # Close pigpio connection
 
 
-    ##################### END Tilt Compensation ########################
 
-
-
-    if 1:                       #Change to '0' to stop showing the angles from the accelerometer
-        outputString += "#  ACCX Angle %5.2f ACCY Angle %5.2f  #  " % (AccXangle, AccYangle)
-
-    if 1:                       #Change to '0' to stop  showing the angles from the gyro
-        outputString +="\t# GRYX Angle %5.2f  GYRY Angle %5.2f  GYRZ Angle %5.2f # " % (gyroXangle,gyroYangle,gyroZangle)
-
-    if 1:                       #Change to '0' to stop  showing the angles from the complementary filter
-        outputString +="\t#  CFangleX Angle %5.2f   CFangleY Angle %5.2f  #" % (CFangleX,CFangleY)
-
-    if 1:                       #Change to '0' to stop  showing the heading
-        outputString +="\t# HEADING %5.2f  tiltCompensatedHeading %5.2f #" % (heading,tiltCompensatedHeading)
-
-    if 1:                       #Change to '0' to stop  showing the angles from the Kalman filter
-        outputString +="\t# kalmanX %5.2f   kalmanY %5.2f #" % (kalmanX,kalmanY)
-    
-    if 1:
-        outputString += "# pitch %5.2f roll %5.2f" % (pitch, roll)
-
-    print(outputString)
-
-    #slow program down a bit, makes the output more readable
-    time.sleep(0.03)
