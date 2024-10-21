@@ -8,7 +8,7 @@ class SpeedDepthHeadingGauges(tk.Tk):
         super().__init__()
 
         self.title("HPS HUD")
-        self.geometry("600x350")
+        self.geometry("800x480")
 
         # Speed Gauge
         self.speed_frame = tk.Frame(self)
@@ -55,7 +55,7 @@ class SpeedDepthHeadingGauges(tk.Tk):
         # self.heading_display = tk.Label(self.heading_frame, textvariable=self.heading_value, font=("Helvetica", 16))
         # self.heading_display.pack(pady=5)
 
-        self.heading_canvas = tk.Canvas(self.heading_frame, width=150, height=150, bg="white")
+        self.heading_canvas = tk.Canvas(self.heading_frame, width=200, height=200, bg="white")
         self.heading_canvas.pack(pady=10)
 
         # Schedule the update_random_values function to be called every second
@@ -99,15 +99,15 @@ class SpeedDepthHeadingGauges(tk.Tk):
 
         # Draw background grid
         for angle in range(0, 360, 45):
-            x1 = 75 + 60 * math.cos(math.radians(angle))
-            y1 = 75 + 60 * math.sin(math.radians(angle))
-            x2 = 75 + 70 * math.cos(math.radians(angle))
-            y2 = 75 + 70 * math.sin(math.radians(angle))
+            x1 = 100 + 60 * math.cos(math.radians(angle))
+            y1 = 100 + 60 * math.sin(math.radians(angle))
+            x2 = 100 + 70 * math.cos(math.radians(angle))
+            y2 = 100 + 70 * math.sin(math.radians(angle))
             self.heading_canvas.create_line(x1, y1, x2, y2)
 
         # Draw a plus sign in the center
-        self.heading_canvas.create_line(70, 75, 80, 75, width=2)
-        self.heading_canvas.create_line(75, 70, 75, 80, width=2)
+        self.heading_canvas.create_line((self.heading_canvas.winfo_height() // 2) + 10, self.heading_canvas.winfo_width() // 2, (self.heading_canvas.winfo_height() // 2) - 10, self.heading_canvas.winfo_width() // 2, width=2)
+        self.heading_canvas.create_line(self.heading_canvas.winfo_height() // 2, (self.heading_canvas.winfo_width() // 2) + 10, self.heading_canvas.winfo_height() // 2, (self.heading_canvas.winfo_width() // 2) - 10, width=2)
 
         # Draw the circle indicating the heading
         x = 75 + 60 * math.cos(math.radians(heading_angle))
