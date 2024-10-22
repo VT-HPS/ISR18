@@ -97,12 +97,12 @@ class SpeedDepthHeadingGauges(tk.Tk):
         # Clear the canvas
         self.heading_canvas.delete("all")
 
-        # Draw background grid
+        # Draw background grid 
         for angle in range(0, 360, 45):
-            x1 = 100 + 60 * math.cos(math.radians(angle))
-            y1 = 100 + 60 * math.sin(math.radians(angle))
-            x2 = 100 + 70 * math.cos(math.radians(angle))
-            y2 = 100 + 70 * math.sin(math.radians(angle))
+            x1 = (self.heading_canvas.winfo_width() // 2) + 60 * math.cos(math.radians(angle))
+            y1 = (self.heading_canvas.winfo_height() // 2) + 60 * math.sin(math.radians(angle))
+            x2 = (self.heading_canvas.winfo_width() // 2) + 70 * math.cos(math.radians(angle))
+            y2 = (self.heading_canvas.winfo_height() // 2) + 70 * math.sin(math.radians(angle))
             self.heading_canvas.create_line(x1, y1, x2, y2)
 
         # Draw a plus sign in the center
