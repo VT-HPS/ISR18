@@ -58,14 +58,44 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.heading_canvas = tk.Canvas(self.heading_frame, width=200, height=200, bg="white")
         self.heading_canvas.pack(pady=10)
 
+        # Battery Warning
+        self.battery_warning_label = tk.Label(self, text="", font=("Helvetica", 16), fg="red")
+        self.battery_warning_label.pack(pady=20)
+
+        # Voltage monitoring variables
+        self.voltage = 13.0  # Initial simulated voltage
+        self.low_voltage_time = 0  # Timer for low voltage warning
+
         # Schedule the update_random_values function to be called every second
         self.after(1000, self.update_random_values)
+
+    # If voltage < 12 for more than 3 seconds then it shows the warning, hides otherwise
+    def check_battery_voltage(self):
+        if self.voltage < 12:
+            self.low_voltage_time += 1
+            if self.low_voltage_time >= 3:
+                self.show_battery_warning()
+        else:
+            self.low_voltage_time = 0
+            self.hide_battery_warning()
+    
+    def show_battery_warning(self):
+        self.battery_warning_label.config(text="⚠️ Battery Low!")
+
+    def hide_battery_warning(self):
+        self.battery_warning_label.config(text="")
 
     def update_random_values(self):
         # Generate random speed, depth, and heading values
         random_speed = random.uniform(0, 5)
         random_depth = random.uniform(0, 10)
         random_heading = random.uniform(0, 360)
+
+        # Simulated voltage between 10 and 14 volts
+        self.voltage = random.uniform(10, 14)  
+
+        # Check battery voltage
+        self.check_battery_voltage()
 
         # Update speed gauge and label
         self.update_speed_gauge(random_speed)
