@@ -61,7 +61,8 @@ i2c = busio.I2C(board.SCL, board.SDA)
 ads = ADS.ADS1115(i2c)
 
 # Define the analog input channel
-channel = AnalogIn(ads, ADS.P0)
+channel1 = AnalogIn(ads, ADS.P0)
+channel2 = AnalogIn(ads, ADS.P1)
 
 # var for formula
 pressure_range = 450
@@ -90,19 +91,28 @@ try:
         pwm.ChangeDutyCycle(0)
         
         # pressure logging code
-        voltage_reading = channel.voltage
-        old_pressure = channel.value / 1023 * 5
-        pressure = (pressure_range * (voltage_reading - voltage_lower) ) / (voltage_upper - voltage_lower)
+        voltage_reading1 = channel1.voltage
+        old_pressure1 = channel1.value / 1023 * 5
+        pressure1 = (pressure_range * (voltage_reading1 - voltage_lower) ) / (voltage_upper - voltage_lower)
+        
+        voltage_reading2 = channel2.voltage
+        old_pressure2 = channel2.value / 1023 * 5
+        pressure2 = (pressure_range * (voltage_reading2 - voltage_lower) ) / (voltage_upper - voltage_lower)
 
         data = [
-            {"Old Pressure": old_pressure, 
-            "Channel Value": channel.value, 
-            "Voltage": voltage_reading,
-            "Pressure": pressure}
+            {"Old Pressure1": old_pressure1, 
+            "Channel Value1": channel1.value, 
+            "Voltage1": voltage_reading1,
+            "Pressure1": pressure1,
+            "Old Pressure2": old_pressure2, 
+            "Channel Value2": channel2.value, 
+            "Voltage2": voltage_reading2,
+            "Pressure2": pressure2}
             ]
         
         with open('test.csv', 'w', newline='') as csvfile:
-            fieldnames = ['Old Pressure', 'Channel Value', 'Voltage', 'Pressure']
+            fieldnames = ['Old Pressure1', 'Channel Value1', 'Voltage1', 'Pressure1',
+                          'Old Pressure2', 'Channel Value2', 'Voltage2', 'Pressure2']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(data)
