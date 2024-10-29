@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import random
 import math
+from numpy import interp
 
 class SpeedDepthHeadingGauges(tk.Tk):
     def __init__(self):
@@ -43,20 +44,33 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.depth_display.pack(pady=5)
 
         # Heading Gauge (Gyroscope)
-        self.heading_frame = tk.Frame(self)
-        self.heading_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+        self.gauge_frame = tk.Frame(self)
+        self.gauge_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-        self.heading_label = tk.Label(self.heading_frame, text="HEADING", font=("Helvetica", 12))
-        self.heading_label.pack(pady=10)
+        self.heading_label = tk.Label(self.gauge_frame, text="HEADING", font=("Helvetica", 12))
+        self.heading_label.grid(row=0, column=0)
+        
+        self.rpm_value = tk.StringVar()
+        self.rpm_value.set("RPM:   0.0")
+        
+        self.rpm_label = tk.Label(self.gauge_frame, font=("Helvetica", 12), textvariable=self.rpm_value)
+        self.rpm_label.grid(row=0, column=1)
 
         self.heading_value = tk.StringVar()
         self.heading_value.set("0.0 degrees")
 
         # self.heading_display = tk.Label(self.heading_frame, textvariable=self.heading_value, font=("Helvetica", 16))
         # self.heading_display.pack(pady=5)
+        
+        self.heading_canvas = tk.Canvas(self.gauge_frame, width=200, height=200, bg="white")
+        self.heading_canvas.grid(row=1, column=0, padx=10, pady=10)
+        
+        # RPM Gauge
+        #self.rpm_frame = tk.Frame(self)
+        #self.rpm_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
-        self.heading_canvas = tk.Canvas(self.heading_frame, width=200, height=200, bg="white")
-        self.heading_canvas.pack(pady=10)
+        self.rpm_canvas = tk.Canvas(self.gauge_frame, width=200, height=200, bg="white")
+        self.rpm_canvas.grid(row=1, column=1, padx=10, pady=10)
 
         # Schedule the update_random_values function to be called every second
         self.after(1000, self.update_random_values)
@@ -66,6 +80,7 @@ class SpeedDepthHeadingGauges(tk.Tk):
         random_speed = random.uniform(0, 5)
         random_depth = random.uniform(0, 10)
         random_heading = random.uniform(0, 360)
+        random_rpm = random.uniform(0, 200) # placeholder max rpm
 
         # Update speed gauge and label
         self.update_speed_gauge(random_speed)
@@ -79,7 +94,10 @@ class SpeedDepthHeadingGauges(tk.Tk):
 
         # Update the heading canvas
         self.update_heading_canvas(random_heading)
-
+        
+        # Update rpm gauge
+        self.update_rpm_gauge(random_rpm)
+        
         # Schedule the function to be called again after one second
         self.after(1000, self.update_random_values)
         
@@ -106,13 +124,30 @@ class SpeedDepthHeadingGauges(tk.Tk):
             self.heading_canvas.create_line(x1, y1, x2, y2)
 
         # Draw a plus sign in the center
-        self.heading_canvas.create_line((self.heading_canvas.winfo_height() // 2) + 10, self.heading_canvas.winfo_width() // 2, (self.heading_canvas.winfo_height() // 2) - 10, self.heading_canvas.winfo_width() // 2, width=2)
-        self.heading_canvas.create_line(self.heading_canvas.winfo_height() // 2, (self.heading_canvas.winfo_width() // 2) + 10, self.heading_canvas.winfo_height() // 2, (self.heading_canvas.winfo_width() // 2) - 10, width=2)
+        half_height = (self.heading_canvas.winfo_height() // 2)
+        half_width = (self.heading_canvas.winfo_width() // 2)
+        self.heading_canvas.create_line(half_height + 10, half_width, half_height - 10, half_width, width=2)
+        self.heading_canvas.create_line(half_height, half_width + 10, half_height, half_width - 10, width=2)
 
         # Draw the circle indicating the heading
         x = 75 + 60 * math.cos(math.radians(heading_angle))
         y = 75 + 60 * math.sin(math.radians(heading_angle))
         self.heading_canvas.create_oval(x - 10, y - 10, x + 10, y + 10, fill="red")
+        
+    def update_rpm_gauge(self, new_value: str): # current placeholder max rpm is 200
+        # Clear the canvas
+        self.rpm_canvas.delete("all")
+        
+        half_height = (self.rpm_canvas.winfo_height() // 2)
+        half_width = (self.rpm_canvas.winfo_width() // 2)
+        self.rpm_canvas.create_oval(2, 2, self.rpm_canvas.winfo_width() - 2, self.rpm_canvas.winfo_height() - 2, width=2)
+        
+        angle = interp(new_value,[0,200],[0,180])
+        x = 75 + 60 * math.cos(math.radians(angle))
+        #y = 75 + 60 * math.sin(math.radians(angle))
+        self.rpm_canvas.create_line(half_width, half_height, x, 0, width = 3)
+        
+        self.rpm_value.set(f"RPM:   {new_value:.2f}")
 
 if __name__ == "__main__":
     app = SpeedDepthHeadingGauges()
