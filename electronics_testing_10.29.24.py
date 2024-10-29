@@ -87,7 +87,9 @@ try:
         
         # lights cycling code
         pwm.ChangeDutyCycle(0)
+        time.sleep(sleep_time)
         pwm.ChangeDutyCycle(19)
+        time.sleep(sleep_time)
         pwm.ChangeDutyCycle(0)
         
         # pressure logging code
