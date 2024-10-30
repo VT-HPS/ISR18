@@ -112,7 +112,7 @@ try:
             "Pressure2": pressure2}
             ]
         
-        with open('test.csv', 'w', newline='') as csvfile:
+        with open('test.csv', 'a', newline='') as csvfile:
             fieldnames = ['Old Pressure1', 'Channel Value1', 'Voltage1', 'Pressure1',
                           'Old Pressure2', 'Channel Value2', 'Voltage2', 'Pressure2']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
