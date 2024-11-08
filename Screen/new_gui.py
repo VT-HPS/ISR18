@@ -141,13 +141,14 @@ class SpeedDepthHeadingGauges(tk.Tk):
         half_height = (self.rpm_canvas.winfo_height() // 2)
         half_width = (self.rpm_canvas.winfo_width() // 2)
         self.rpm_canvas.create_oval(2, 2, self.rpm_canvas.winfo_width() - 2, self.rpm_canvas.winfo_height() - 2, width=2)
+        angle = interp(new_value,[0,200],[0,180]) # MAX RPM ON THIS LINE. CURRENTLY 200
+        x = half_width - half_width * math.cos(math.radians(angle))
+        y = half_height - half_height * math.sin(math.radians(angle))
+        self.rpm_canvas.create_line(half_width, half_height, x, y, width = 3)
         
-        angle = interp(new_value,[0,200],[0,180])
-        x = 75 + 60 * math.cos(math.radians(angle))
-        #y = 75 + 60 * math.sin(math.radians(angle))
-        self.rpm_canvas.create_line(half_width, half_height, x, 0, width = 3)
-        
-        self.rpm_value.set(f"RPM:   {new_value:.2f}")
+        new_value = round(new_value, 2)
+        self.rpm_value.set(f"RPM:   {new_value}")
+        self.rpm_canvas.create_text(half_width, half_height + half_height / 2, text = new_value, font = ("Helvetica 30"))
 
 if __name__ == "__main__":
     app = SpeedDepthHeadingGauges()
