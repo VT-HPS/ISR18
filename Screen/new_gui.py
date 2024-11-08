@@ -138,17 +138,27 @@ class SpeedDepthHeadingGauges(tk.Tk):
         # Clear the canvas
         self.rpm_canvas.delete("all")
         
+        # draw the circle
         half_height = (self.rpm_canvas.winfo_height() // 2)
         half_width = (self.rpm_canvas.winfo_width() // 2)
         self.rpm_canvas.create_oval(2, 2, self.rpm_canvas.winfo_width() - 2, self.rpm_canvas.winfo_height() - 2, width=2)
-        angle = interp(new_value,[0,200],[0,180]) # MAX RPM ON THIS LINE. CURRENTLY 200
+        self.rpm_canvas.create_line(0, half_height, half_width * 2, half_height, width = 2)
+        
+        # use interp to get the right angle for the rpm, draw the corresponding line
+        angle = interp(new_value,[0,200],[0,180]) # MAX RPM ON THIS LINE. CURRENTLY 200. PLACEHOLDER
         x = half_width - half_width * math.cos(math.radians(angle))
         y = half_height - half_height * math.sin(math.radians(angle))
-        self.rpm_canvas.create_line(half_width, half_height, x, y, width = 3)
+        self.rpm_canvas.create_line(half_width, half_height, x, y, width = 3, fill = "red")
         
+        # create labels for the rpm value
         new_value = round(new_value, 2)
         self.rpm_value.set(f"RPM:   {new_value}")
         self.rpm_canvas.create_text(half_width, half_height + half_height / 2, text = new_value, font = ("Helvetica 30"))
+        
+        # draw number labels for rpm gauge. CURRENT VALUES ARE PLACEHOLDERS
+        self.rpm_canvas.create_text(10, half_height - 10, text = "0", font = ("Helvetica 10")) # left
+        self.rpm_canvas.create_text(half_width, 15, text = "100", font = ("Helvetica 10")) # top
+        self.rpm_canvas.create_text(half_width * 2 - 20, half_height - 10, text = "200", font = ("Helvetica 10")) # right
 
 if __name__ == "__main__":
     app = SpeedDepthHeadingGauges()
