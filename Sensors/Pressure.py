@@ -18,6 +18,8 @@ channel = AnalogIn(ads, ADS.P0)
 pressure_range = 450
 voltage_upper = 5
 voltage_lower = 0
+depth = 0.0
+water_pressure =  0.0
 
 
 
@@ -26,10 +28,12 @@ voltage_lower = 0
 while True:
     voltage_reading = channel.voltage
     old_pressure = channel.value / 1023 * 5
-    pressure = (pressure_range * (voltage_reading - voltage_lower) ) / (voltage_upper - voltage_lower)
-    print("Old Pressure: ", old_pressure)
-    print("Channel Value: ", channel.value)
-    print("Voltage: ", voltage_reading)
-    print("Pressure:    ", pressure)
+    depth = (voltage_reading - 0.075) / 0.092
+    water_pressure = depth * 0.433
+    print("Voltage:     ", voltage_reading)
+    print("Depth:   ", depth)
+    print("PSIG:    ", water_pressure)
+    print("Channel value:  ", channel.value)
+    print("\n")
 
     time.sleep(0.5)

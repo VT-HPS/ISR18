@@ -3,7 +3,7 @@ import time
 
 # Servo Setup
 # Initialize pigpio
-pi = pigpio.pi('localhost', 8888)
+pi = pigpio.pi()
 
 # Define GPIO pins connected to the servos
 servo_gpio_pin_1 = 19

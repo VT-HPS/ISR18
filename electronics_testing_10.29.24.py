@@ -23,9 +23,9 @@ servo_gpio_pin_2 = 18
 servo_min_pulse = 900
 servo_max_pulse = 2100
 
-# Servo range
+# Set servo angle limits
 servo_min_angle = 0
-servo_max_angle = 180
+servo_max_angle = 130
 
 # Sleep time
 sleep_time = 1
