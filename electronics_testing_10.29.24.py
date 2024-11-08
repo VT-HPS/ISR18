@@ -57,21 +57,21 @@ sleep_time = 1
 pwm.start(11) # starts the signal at the minmum value (11-19)
 time.sleep(1)
 
-# PRESSURE SETUP ---------------------------------
-# Initialize the I2C interface
-i2c = busio.I2C(board.SCL, board.SDA)
+# # PRESSURE SETUP ---------------------------------
+# # Initialize the I2C interface
+# i2c = busio.I2C(board.SCL, board.SDA)
 
-# Create an ADS 1115 object
-ads = ADS.ADS1115(i2c)
+# # Create an ADS 1115 object
+# ads = ADS.ADS1115(i2c)
 
-# Define the analog input channel
-channel1 = AnalogIn(ads, ADS.P0)
-channel2 = AnalogIn(ads, ADS.P1)
+# # Define the analog input channel
+# channel1 = AnalogIn(ads, ADS.P0)
+# channel2 = AnalogIn(ads, ADS.P1)
 
-# var for formula
-pressure_range = 450
-voltage_upper = 5
-voltage_lower = 0
+# # var for formula
+# pressure_range = 450
+# voltage_upper = 5
+# voltage_lower = 0
 
 
 # RUNNING LOOP -------------------------------------
