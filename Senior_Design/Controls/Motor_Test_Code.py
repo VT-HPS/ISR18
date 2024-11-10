@@ -5,8 +5,8 @@ import time
 import pigpio
 
 DEFAULT_SPEED = 0
-ANGLE_0_PWM = 800
-ANGLE_MAX_PWM = 2200
+ANGLE_0_PWM = 850
+ANGLE_MAX_PWM = 2150
 TRAVEL_RANGE_ANGLE = 130
 PWM_FREQ = 100
 
@@ -14,7 +14,7 @@ PWM_FREQ = 100
 def parse_cli():
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--position", type=int, default=DEFAULT_SPEED, help=f"Initial Position in degrees that the motor should start in, default\
-                        is the angle 0 (800us). Position must be greater than 0 or less than {TRAVEL_RANGE_ANGLE}")
+                        is the angle 0 (900). Position must be greater than 0 or less than {TRAVEL_RANGE_ANGLE}")
     args = parser.parse_args()
     
     if args.position is not None and (args.position < 0 or args.position > TRAVEL_RANGE_ANGLE):
@@ -43,6 +43,7 @@ if __name__ == "__main__":
 
     # Set PWM pin
     PWM_PIN = 18
+    pwm_PIN_2 = 19
     #GPIO.setup(PWM_PIN, GPIO.OUT)
     pwm.set_mode(PWM_PIN, pigpio.OUTPUT)
     pwm.set_PWM_frequency(PWM_PIN, PWM_FREQ)

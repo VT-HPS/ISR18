@@ -14,7 +14,7 @@ data_dir = strcat(pwd, folder_name);
 % Onland_Test = dir(data_dir);
 
 %The only data sets we are looking at
-data_sets = {'\100', '\133', '\var', '\75'};
+data_sets = {'\handtest', '\noprop', '\test'};
 % data_sets = {'\test'};
 
 
@@ -25,7 +25,7 @@ for ii = 1:length(data_sets)
     data_folder = d.folder;
 
     for jj = 3:length(d)
-        if (ii == 1 && jj == 3)
+        if (ii == 3 && jj == 3)
             jawn = 1;
         else
 
@@ -40,16 +40,16 @@ for ii = 1:length(data_sets)
             data2_indicies = find(data(:,2) == 2);
             data2_time = data(data2_indicies, 1);
 
-            data3_indicies = find(data(:,2) == 3);
-            data3_time = data(data3_indicies, 1);
+%             data3_indicies = find(data(:,2) == 3);
+%             data3_time = data(data3_indicies, 1);
 
-            data_times = {data1_time, data2_time, data3_time};
+            data_times = {data1_time, data2_time};
 
             RPM1 = [];
             RPM2 = [];
             RPM3 = [];
  
-            RPM = {RPM1, RPM2, RPM3};
+            RPM = {RPM1, RPM2};
 
             %Iterating through calculating RPM over 10 activations
             for kk = 1:length(data_times)
@@ -64,11 +64,11 @@ for ii = 1:length(data_sets)
             hold on
             plot(data1_time(10:end), RPM{1})
             plot(data2_time(10:end), RPM{2})
-            plot(data3_time(10:end), RPM{3})
             ylabel('RPM')
+            xlabel('Time (s)')
             title(d(jj).name)
             %legend('Sensor 1', 'Sensor 2', 'Sensor 3')
-            legend('Sprocket1 Sensor', 'Sprocket2 Sensor', 'Prop Sensor')
+            legend('Prop Sensor', 'Pedal Sensor')
 
             hold off
 

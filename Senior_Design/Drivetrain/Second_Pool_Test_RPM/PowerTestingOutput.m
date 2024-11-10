@@ -37,7 +37,7 @@ if dataFile == -1
 end
 
 % Duration to read data (in seconds).
-duration = 75;
+duration = 180;
 
 
 % Initialize arrays for storing data and timestamps.
