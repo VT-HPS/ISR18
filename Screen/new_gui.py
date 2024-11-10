@@ -37,8 +37,8 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.depth_value = tk.StringVar()
         self.depth_value.set("0.0 feet")
 
-        self.depth_gauge = ttk.Progressbar(self.depth_frame, orient="vertical", length=200, mode="determinate")
-        self.depth_gauge.pack(pady=10)
+        self.depth_canvas = tk.Canvas(self.depth_frame, width=50, height=300, bg="white")
+        self.depth_canvas.pack(pady=10)
 
         self.depth_display = tk.Label(self.depth_frame, textvariable=self.depth_value, font=("Helvetica", 16))
         self.depth_display.pack(pady=5)
@@ -59,15 +59,8 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.heading_value = tk.StringVar()
         self.heading_value.set("0.0 degrees")
 
-        # self.heading_display = tk.Label(self.heading_frame, textvariable=self.heading_value, font=("Helvetica", 16))
-        # self.heading_display.pack(pady=5)
-        
         self.heading_canvas = tk.Canvas(self.gauge_frame, width=200, height=200, bg="white")
         self.heading_canvas.grid(row=1, column=0, padx=10, pady=10)
-        
-        # RPM Gauge
-        #self.rpm_frame = tk.Frame(self)
-        #self.rpm_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
         self.rpm_canvas = tk.Canvas(self.gauge_frame, width=200, height=200, bg="white")
         self.rpm_canvas.grid(row=1, column=1, padx=10, pady=10)
@@ -78,7 +71,7 @@ class SpeedDepthHeadingGauges(tk.Tk):
     def update_random_values(self):
         # Generate random speed, depth, and heading values
         random_speed = random.uniform(0, 5)
-        random_depth = random.uniform(0, 10)
+        random_depth = random.uniform(0, 30)
         random_heading = random.uniform(0, 360)
         random_rpm = random.uniform(0, 200) # placeholder max rpm
 
@@ -107,8 +100,21 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.speed_value.set(f"{new_speed:.2f} m/s")    
         
     def update_depth_gauge(self, new_depth):
-        depth_gauge_value = int((new_depth / 10) * 100)
-        self.depth_gauge["value"] = depth_gauge_value
+        self.depth_canvas.delete("all")
+
+        max_depth = 30
+        goal_depth = 15
+
+        # Calculate bubble position
+        depth_height = int((new_depth / max_depth) * 300)
+        goal_height = int((goal_depth / max_depth) * 300)
+
+        # Draw the bubble indicating current depth
+        self.depth_canvas.create_oval(10, 300 - depth_height - 10, 40, 300 - depth_height + 10, fill="red")
+
+        # Draw the green square indicating the goal point
+        self.depth_canvas.create_rectangle(0, 300 - goal_height - 5, 50, 300 - goal_height + 5, outline="green", width=2)
+
         self.depth_value.set(f"{new_depth:.2f} feet")
 
     def update_heading_canvas(self, heading_angle):
