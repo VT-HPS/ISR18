@@ -8,62 +8,64 @@ class SpeedDepthHeadingGauges(tk.Tk):
     def __init__(self):
         super().__init__()
 
+        default_background_color = self.cget("bg")
+        
         self.title("HPS HUD")
         self.geometry("800x480")
 
         # Speed Gauge
         self.speed_frame = tk.Frame(self)
-        self.speed_frame.pack(side=tk.LEFT, padx=10)
+        self.speed_frame.pack(side = tk.LEFT, padx = 10)
 
-        self.speed_label = tk.Label(self.speed_frame, text="SPEED", font=("Helvetica", 12))
-        self.speed_label.pack(pady=10)
+        self.speed_label = tk.Label(self.speed_frame, text = "SPEED", font = ("Helvetica", 12))
+        self.speed_label.pack(pady = 10)
 
         self.speed_value = tk.StringVar()
         self.speed_value.set("0.0 m/s")
 
-        self.speed_gauge = ttk.Progressbar(self.speed_frame, orient="vertical", length=200, mode="determinate")
-        self.speed_gauge.pack(pady=10)
+        self.speed_gauge = ttk.Progressbar(self.speed_frame, orient = "vertical", length = 200, mode = "determinate")
+        self.speed_gauge.pack(pady = 10)
 
-        self.speed_display = tk.Label(self.speed_frame, textvariable=self.speed_value, font=("Helvetica", 16))
-        self.speed_display.pack(pady=5)
+        self.speed_display = tk.Label(self.speed_frame, textvariable = self.speed_value, font = ("Helvetica", 16))
+        self.speed_display.pack(pady = 5)
 
         # Depth Gauge
         self.depth_frame = tk.Frame(self)
-        self.depth_frame.pack(side=tk.RIGHT, padx=10)
+        self.depth_frame.pack(side = tk.RIGHT, padx = 10)
 
-        self.depth_label = tk.Label(self.depth_frame, text="DEPTH", font=("Helvetica", 12))
+        self.depth_label = tk.Label(self.depth_frame, text = "DEPTH", font = ("Helvetica", 12))
         self.depth_label.pack(pady=10)
 
         self.depth_value = tk.StringVar()
         self.depth_value.set("0.0 feet")
 
-        self.depth_canvas = tk.Canvas(self.depth_frame, width=50, height=300, bg="white")
+        self.depth_canvas = tk.Canvas(self.depth_frame, width = 50, height = 300, background = default_background_color, highlightthickness = 1, highlightbackground = "black")
         self.depth_canvas.pack(pady=10)
 
-        self.depth_display = tk.Label(self.depth_frame, textvariable=self.depth_value, font=("Helvetica", 16))
+        self.depth_display = tk.Label(self.depth_frame, textvariable = self.depth_value, font = ("Helvetica", 16))
         self.depth_display.pack(pady=5)
 
         # Heading Gauge (Gyroscope)
         self.gauge_frame = tk.Frame(self)
-        self.gauge_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+        self.gauge_frame.place(relx = 0.5, rely = 0.5, anchor = tk.CENTER)
 
-        self.heading_label = tk.Label(self.gauge_frame, text="HEADING", font=("Helvetica", 12))
-        self.heading_label.grid(row=0, column=0)
-        
+        self.heading_label = tk.Label(self.gauge_frame, text = "HEADING", font = ("Helvetica", 12))
+        self.heading_label.grid(row = 0, column = 0) 
+         
         self.rpm_value = tk.StringVar()
         self.rpm_value.set("RPM:   0.0")
         
-        self.rpm_label = tk.Label(self.gauge_frame, font=("Helvetica", 12), textvariable=self.rpm_value)
+        self.rpm_label = tk.Label(self.gauge_frame, font = ("Helvetica", 12), textvariable = self.rpm_value)
         self.rpm_label.grid(row=0, column=1)
 
         self.heading_value = tk.StringVar()
         self.heading_value.set("0.0 degrees")
 
-        self.heading_canvas = tk.Canvas(self.gauge_frame, width=200, height=200, bg="white")
-        self.heading_canvas.grid(row=1, column=0, padx=10, pady=10)
+        self.heading_canvas = tk.Canvas(self.gauge_frame, width=200, height=200, background = default_background_color, highlightthickness = 1, highlightbackground = "black")
+        self.heading_canvas.grid(row = 1, column = 0, padx = 10, pady = 10)
 
-        self.rpm_canvas = tk.Canvas(self.gauge_frame, width=200, height=200, bg="white")
-        self.rpm_canvas.grid(row=1, column=1, padx=10, pady=10)
+        self.rpm_canvas = tk.Canvas(self.gauge_frame, width = 200, height = 200, background = default_background_color)
+        self.rpm_canvas.grid(row = 1, column = 1, padx = 10, pady = 10)
 
         # Schedule the update_random_values function to be called every second
         self.after(1000, self.update_random_values)
@@ -106,15 +108,21 @@ class SpeedDepthHeadingGauges(tk.Tk):
         goal_depth = 15
 
         # Calculate bubble position
-        depth_height = int((new_depth / max_depth) * 300)
-        goal_height = int((goal_depth / max_depth) * 300)
+        depth_height = int((new_depth / max_depth) * self.depth_canvas.winfo_height())
+        goal_height = int((goal_depth / max_depth) * self.depth_canvas.winfo_height())
 
         # Draw the bubble indicating current depth
-        self.depth_canvas.create_oval(10, 300 - depth_height - 10, 40, 300 - depth_height + 10, fill="red")
+        self.depth_canvas.create_oval(10, depth_height - 10, 40, depth_height + 10, fill = "red", outline = "red")
 
         # Draw the green square indicating the goal point
-        self.depth_canvas.create_rectangle(0, 300 - goal_height - 5, 50, 300 - goal_height + 5, outline="green", width=2)
-
+        self.depth_canvas.create_rectangle(2, goal_height - 5, 50, goal_height + 5, outline = "green", width = 2)
+        
+        # Draw some labels on the depth bar
+        self.depth_canvas.create_text(7, 10, text = "0")
+        self.depth_canvas.create_text(13, self.depth_canvas.winfo_height() / 4, text = str(max_depth * 0.25))
+        self.depth_canvas.create_text(17, (self.depth_canvas.winfo_height() / 4) * 3, text = str((max_depth * 0.75)))
+        self.depth_canvas.create_text(11, self.depth_canvas.winfo_height() - 10, text = str(max_depth))
+        
         self.depth_value.set(f"{new_depth:.2f} feet")
 
     def update_heading_canvas(self, heading_angle):
