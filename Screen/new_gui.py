@@ -67,8 +67,33 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.rpm_canvas = tk.Canvas(self.gauge_frame, width = 200, height = 200, background = default_background_color)
         self.rpm_canvas.grid(row = 1, column = 1, padx = 10, pady = 10)
 
+        # Battery Warning
+        self.battery_warning_label = tk.Label(self, text="", font=("Helvetica", 16), fg="red")
+        self.battery_warning_label.pack(pady=20)
+
+
+        # Voltage monitoring variables
+        self.voltage = 13.0  # Initial simulated voltage
+        self.low_voltage_time = 0  # Timer for low voltage warning
+
         # Schedule the update_random_values function to be called every second
         self.after(1000, self.update_random_values)
+
+    # If voltage < 12 for more than 3 seconds then it shows the warning, hides otherwise
+    def check_battery_voltage(self):
+        if self.voltage < 12:
+            self.low_voltage_time += 1
+            if self.low_voltage_time >= 3:
+                self.show_battery_warning()
+        else:
+            self.low_voltage_time = 0
+            self.hide_battery_warning()
+    
+    def show_battery_warning(self):
+        self.battery_warning_label.config(text="⚠️ Battery Low!")
+
+    def hide_battery_warning(self):
+        self.battery_warning_label.config(text="")
 
     def update_random_values(self):
         # Generate random speed, depth, and heading values
@@ -92,6 +117,12 @@ class SpeedDepthHeadingGauges(tk.Tk):
         
         # Update rpm gauge
         self.update_rpm_gauge(random_rpm)
+
+        # Simulated voltage between 10 and 14 volts
+        self.voltage = random.uniform(10, 14)  
+
+        # Check battery voltage
+        self.check_battery_voltage()
         
         # Schedule the function to be called again after one second
         self.after(1000, self.update_random_values)
