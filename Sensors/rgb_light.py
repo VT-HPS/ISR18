@@ -7,7 +7,7 @@ import digitalio
 import neopixel_spi as neopixel
 import time
 
-NUM_PIXELS = 12
+NUM_PIXELS = 1
 PIXEL_ORDER = neopixel.GRB
 COLORS = (0xFF0000, 0x00FF00, 0x0000FF)
 DELAY = 0.1
