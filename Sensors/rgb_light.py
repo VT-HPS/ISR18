@@ -4,8 +4,6 @@ import RPi.GPIO
 import neopixel_write
 import board
 import digitalio
-import adafruit_blinka
-import spi_install.bin
 
 #from Battery_Warning import check_for_low_battery, check_for_dead_battery
 
