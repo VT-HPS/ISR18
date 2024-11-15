@@ -75,6 +75,60 @@ KFangleX = 0.0
 KFangleY = 0.0
 
 
+# Working variables for PID
+last_time = 0
+input_yaw = 0.0
+input_pitch = 0.0
+output_yaw = 0.0
+output_pitch = 0.0
+setpoint_yaw = 0.0
+setpoint_pitch = 0.0
+err_sum_yaw = 0.0
+err_sum_pitch = 0.0
+last_err_yaw = 0.0
+last_err_pitch = 0.0
+kp_yaw = 0.0
+ki_yaw = 0.0
+kd_yaw = 0.0
+kp_pitch = 0.0
+ki_pitch = 0.0
+kd_pitch = 0.0
+
+def compute():
+    global last_time, input_yaw, input_pitch, output_yaw, output_pitch, setpoint_yaw, setpoint_pitch
+    global err_sum_yaw, err_sum_pitch, last_err_yaw, last_err_pitch, kp_yaw, ki_yaw, kd_yaw, kp_pitch, ki_pitch, kd_pitch
+
+    # Get current time in milliseconds
+    now = time.time() * 1000  # Current time in milliseconds
+    time_change = (now - last_time) / 1000.0  # Convert to seconds
+
+    # Compute yaw PID terms
+    error_yaw = setpoint_yaw - input_yaw
+    err_sum_yaw += error_yaw * time_change
+    ##d_err_yaw = (error_yaw - last_err_yaw) / time_change if time_change > 0 else 0.0
+    output_yaw = kp_yaw * error_yaw + ki_yaw * err_sum_yaw + kd_yaw ## * d_err_yaw
+
+    # Compute pitch PID terms
+    error_pitch = setpoint_pitch - input_pitch
+    err_sum_pitch += error_pitch * time_change
+    ## d_err_pitch = (error_pitch - last_err_pitch) / time_change if time_change > 0 else 0.0
+    output_pitch = kp_pitch * error_pitch + ki_pitch * err_sum_pitch + kd_pitch ## * d_err_pitch
+
+
+    # Update previous errors for next cycle
+    last_err_yaw = error_yaw
+    last_err_pitch = error_pitch
+    last_time = now
+
+def set_tunings(Kp_yaw, Ki_yaw, Kd_yaw, Kp_pitch, Ki_pitch, Kd_pitch):
+    global kp_yaw, ki_yaw, kd_yaw, kp_pitch, ki_pitch, kd_pitch
+    kp_yaw = Kp_yaw
+    ki_yaw = Ki_yaw
+    kd_yaw = Kd_yaw
+    kp_pitch = Kp_pitch
+    ki_pitch = Ki_pitch
+    kd_pitch = Kd_pitch
+
 
 
 def kalmanFilterY ( accAngle, gyroRate, DT):
@@ -281,27 +335,46 @@ while True:
 
 
 
-    if 1:                       #Change to '0' to stop showing the angles from the accelerometer
+    if 0:                       #Change to '0' to stop showing the angles from the accelerometer
         outputString += "#  ACCX Angle %5.2f ACCY Angle %5.2f  #  " % (AccXangle, AccYangle)
 
-    if 1:                       #Change to '0' to stop  showing the angles from the gyro
+    if 0:                       #Change to '0' to stop  showing the angles from the gyro
         outputString +="\t# GRYX Angle %5.2f  GYRY Angle %5.2f  GYRZ Angle %5.2f # " % (gyroXangle,gyroYangle,gyroZangle)
 
-    if 1:                       #Change to '0' to stop  showing the angles from the complementary filter
+    if 0:                       #Change to '0' to stop  showing the angles from the complementary filter
         outputString +="\t#  CFangleX Angle %5.2f   CFangleY Angle %5.2f  #" % (CFangleX,CFangleY)
         with open("cfangle.txt", "a") as f:
             print(outputString, file=f)
             ##print("I have a question.", file=f)
-        ##print(outputString)
+        print(outputString)
 
 
-    if 1:                       #Change to '0' to stop  showing the heading
+    if 0:                       #Change to '0' to stop  showing the heading
         outputString +="\t# HEADING %5.2f  tiltCompensatedHeading %5.2f #" % (heading,tiltCompensatedHeading)
 
-    if 1:                       #Change to '0' to stop  showing the angles from the Kalman filter
+    if 0:                       #Change to '0' to stop  showing the angles from the Kalman filter
         outputString +="# kalmanX %5.2f   kalmanY %5.2f #" % (kalmanX,kalmanY)
 
-    
+
+    # Example usage:
+    # Set tunings for yaw and pitch
+    set_tunings(Kp_yaw=1.0, Ki_yaw=0.1, Kd_yaw=0.01, Kp_pitch=1.0, Ki_pitch=0.1, Kd_pitch=0.01)
+
+    # Simulating sensor values (yaw and pitch angles)
+    input_yaw = 45.0  # Current yaw angle (degrees)
+    input_pitch = math.asin(accXnorm)  # Current pitch angle (degrees)
+
+    # Desired setpoints for yaw and pitch
+    setpoint_yaw = 90.0  # Desired yaw angle (degrees)
+    setpoint_pitch = 0.0  # Desired pitch angle (degrees)
+
+    # Run the PID computation
+    compute()
+
+    # Output the results for yaw and pitch
+    #print(f"PID Output for Yaw: {output_yaw}")
+    print(f"PID Output for Pitch: {output_pitch}")
+
 
     #slow program down a bit, makes the output more readable
     time.sleep(0.03)
