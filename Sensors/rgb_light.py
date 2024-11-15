@@ -4,6 +4,17 @@ import RPi.GPIO
 import neopixel_write
 import board
 import digitalio
+import neopixel
+import time
+
+pixelNum = 1
+PixelOrder = neopixel.GRB
+spi = board.SPI
+color = (0xFF0000, 0X00FF00, 0X000FF)
+delay = 0.1
+pixel = neopixel.NeoPixelSPI(spi, pixelNum, pixel_order = PixelOrder, auto_write = False)
+
+
 #from Battery_Warning import check_for_low_battery, check_for_dead_battery
 
 
