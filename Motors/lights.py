@@ -26,9 +26,14 @@ pwm.start(11) # starts the signal at the minmum value (11-19)
 time.sleep(4)
 try:
     while True: # dont need sleep time bc of duty cycle
-        pwm.ChangeDutyCycle(0)
-        pwm.ChangeDutyCycle(19)
-        pwm.ChangeDutyCycle(0)
+        
+        switch = True # switch is 1, which means lights should be on
+
+        if(switch):
+         pwm.ChangeDutyCycle(19)
+
+        else:
+            pwm.ChangeDutyCycle(0)
     
 
 finally:
