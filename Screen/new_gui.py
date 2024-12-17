@@ -143,7 +143,7 @@ class SpeedDepthHeadingGauges(tk.Tk):
         goal_height = int((goal_depth / max_depth) * self.depth_canvas.winfo_height())
 
         # Draw the bubble indicating current depth
-        self.depth_canvas.create_oval(10, depth_height - 10, 40, depth_height + 10, fill = "red", outline = "red")
+        self.depth_canvas.create_rectangle(2, depth_height - 5, 50, depth_height + 5, fill = "red", outline = "red")
 
         # Draw the green square indicating the goal point
         self.depth_canvas.create_rectangle(2, goal_height - 5, 50, goal_height + 5, outline = "green", width = 2)
