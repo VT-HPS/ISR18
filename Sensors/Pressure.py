@@ -12,7 +12,7 @@ i2c = busio.I2C(board.SCL, board.SDA)
 ads = ADS.ADS1115(i2c)
 
 # Define the analog input channel
-channel = AnalogIn(ads, ADS.P0)
+channel = AnalogIn(ads, ADS.P1)
 
 # var for formula
 pressure_range = 450
@@ -36,4 +36,4 @@ while True:
     print("Channel value:  ", channel.value)
     print("\n")
 
-    time.sleep(0.5)
+    time.sleep(1.5)

@@ -1,6 +1,6 @@
 from gpiozero import Button
 import time
-button = Button(2)
+button = Button(23)
 prevState = 0
 prevTime = time.time()
 rpm = 0

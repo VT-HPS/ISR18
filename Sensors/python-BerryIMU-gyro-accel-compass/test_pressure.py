@@ -20,7 +20,7 @@ button = Button(4, False)
 
 def read_sensor_values():
     pressure = channel.value/1023 *5
-    #print(pressure)
+    print( pressure)
     print(channel.value)
 iteration = 0
 data = []

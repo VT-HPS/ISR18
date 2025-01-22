@@ -1,32 +1,28 @@
 from gpiozero import LED
 from time import sleep
 import RPi.GPIO
-import neopixel_write
+#import neopixel_write
 import board
-import digitalio
-import neopixel_spi as neopixel
+#import digitalio
+#import neopixel_spi as neopixel
 import time
 
-NUM_PIXELS = 1
-PIXEL_ORDER = neopixel.GRB
-COLORS = (0xFF0000, 0x00FF00, 0x0000FF)
-DELAY = 0.1
+#NUM_PIXELS = 1
+#PIXEL_ORDER = neopixel.GRB
+#COLORS = (0xFF0000, 0x00FF00, 0x0000FF)
+#DELAY = 0.1
 
 spi = board.SPI()
 
-pixels = neopixel.NeoPixel_SPI(spi,
-                               NUM_PIXELS,
-                               pixel_order=PIXEL_ORDER,
-                               auto_write=False)
-
+#pixels = neopixel.NeoPixel_SPI(spi,
+#                               NUM_PIXELS,
+#                               pixel_order=PIXEL_ORDER,
+#                               auto_write=False)
+yellow_LED = LED(17)
+green_LED = LED(27)
 while True:
-    for color in COLORS:
-        for i in range(NUM_PIXELS):
-            pixels[i] = color
-            pixels.show()
-            time.sleep(DELAY)
-            pixels.fill(0)
-            print("working")
+    yellow_LED.on()
+    green_LED.on()
 
 
 #pin = digitalio.DigitalInOut(board.D18)#uses pin 18 as signal
