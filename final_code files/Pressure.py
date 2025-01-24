@@ -22,18 +22,13 @@ depth = 0.0
 water_pressure =  0.0
 
 
+voltage_reading = channel.voltage
+old_pressure = channel.value / 1023 * 5
+depth = (voltage_reading - 0.075) / 0.092
+water_pressure = depth * 0.433
+print("Voltage:     ", voltage_reading)
+print("Depth:   ", depth)
+print("PSIG:    ", water_pressure)
+print("Channel value:  ", channel.value)
+print("\n")
 
-#button = Button(4, False)
-# Loop to read the analog inputs continually
-while True:
-    voltage_reading = channel.voltage
-    old_pressure = channel.value / 1023 * 5
-    depth = (voltage_reading - 0.075) / 0.092
-    water_pressure = depth * 0.433
-    print("Voltage:     ", voltage_reading)
-    print("Depth:   ", depth)
-    print("PSIG:    ", water_pressure)
-    print("Channel value:  ", channel.value)
-    print("\n")
-
-    time.sleep(0.5)
