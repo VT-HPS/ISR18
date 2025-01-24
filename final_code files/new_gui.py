@@ -3,6 +3,7 @@ from tkinter import ttk
 import random
 import math
 from numpy import interp
+import globals
 
 class SpeedDepthHeadingGauges(tk.Tk):
     def __init__(self):
@@ -69,12 +70,16 @@ class SpeedDepthHeadingGauges(tk.Tk):
 
         # Battery Warning
         self.battery_warning_label = tk.Label(self, text="", font=("Helvetica", 16), fg="red")
-        self.battery_warning_label.pack(pady=20)
-
+        self.battery_warning_label.pack()
 
         # Voltage monitoring variables
         self.voltage = 13.0  # Initial simulated voltage
         self.low_voltage_time = 0  # Timer for low voltage warning
+        
+        # Standby Overlay
+        self.standby = tk.Frame(self, bg="red", width=600, height=300)
+        self.standby_label = tk.Label(self.standby, text="STANDBY", fg="white", bg="red", font=("Arial", 40))
+        self.standby_label.pack(pady=20)
 
         # Schedule the update_random_values function to be called every second
         self.after(1000, self.update_random_values)
@@ -123,6 +128,12 @@ class SpeedDepthHeadingGauges(tk.Tk):
 
         # Check battery voltage
         self.check_battery_voltage()
+        
+        # Show standby screen
+        if globals.gui_show_standby:
+            self.show_standby()
+        else:
+            self.hide_standby()
         
         # Schedule the function to be called again after one second
         self.after(1000, self.update_random_values)
@@ -204,7 +215,15 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.rpm_canvas.create_text(10, half_height - 10, text = "0", font = ("Helvetica 10")) # left
         self.rpm_canvas.create_text(half_width, 15, text = "100", font = ("Helvetica 10")) # top
         self.rpm_canvas.create_text(half_width * 2 - 20, half_height - 10, text = "200", font = ("Helvetica 10")) # right
+        
+    def show_standby(self): # show the standby message on top of screen
+        self.standby.lift()
+        self.standby.place(relx=0.5, rely=0.5, anchor='center')
 
+    def hide_standby(self): # hide standby screen
+        self.standby.place_forget()  # Remove the overlay from view
+
+# TODO REMOVE THIS FOR FINAL VERSION
 if __name__ == "__main__":
     app = SpeedDepthHeadingGauges()
     app.mainloop()
