@@ -1,2 +1,0 @@
-Timestamp, ACCx, ACCy, ACCz, GYRx, GYRy, GYRz, MAGx, MAGy, MAGz, pressure1, pressure2
-2024-04-13 00:22:50, -344, -741, -3881, -2, 5, -40, -1005, -821, 3858, 42.717497556207235, 42.96676441837732
