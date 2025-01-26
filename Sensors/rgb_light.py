@@ -1,7 +1,6 @@
 from gpiozero import LED
 from time import sleep
 import RPi.GPIO
-#import neopixel_write
 import board
 import digitalio
 
@@ -17,7 +16,7 @@ yellow_ledBat = LED(27)
 red_ledBat = LED(22)
 
 
-while(True):#comment out this "while(True):" when combining code assuming this will just go on the main loop
+while(True):#comment out this "while(True):" when combining code assuming this will just go in the main loop
 
     #Actual lights code
     #white_ledLeak.off()
