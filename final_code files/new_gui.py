@@ -101,6 +101,13 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.battery_warning_label.config(text="")
 
     def update_random_values(self):
+        # Show standby screen
+        if globals.gui_show_standby:
+            self.show_standby()
+            return
+        else:
+            self.hide_standby()
+        
         # Generate random speed, depth, and heading values
         random_speed = random.uniform(0, 5)
         random_depth = random.uniform(0, 30)
