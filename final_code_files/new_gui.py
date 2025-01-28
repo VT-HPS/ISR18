@@ -104,43 +104,36 @@ class SpeedDepthHeadingGauges(tk.Tk):
         # Show standby screen
         if globals.gui_show_standby:
             self.show_standby()
-            return
         else:
             self.hide_standby()
         
-        # Generate random speed, depth, and heading values
-        random_speed = random.uniform(0, 5)
-        random_depth = random.uniform(0, 30)
-        random_heading = random.uniform(0, 360)
-        random_rpm = random.uniform(0, 200) # placeholder max rpm
+            # Generate random speed, depth, and heading values
+            random_speed = random.uniform(0, 5)
+            random_depth = random.uniform(0, 30)
+            random_heading = random.uniform(0, 360)
+            random_rpm = random.uniform(0, 200) # placeholder max rpm
 
-        # Update speed gauge and label
-        self.update_speed_gauge(random_speed)
+            # Update speed gauge and label
+            self.update_speed_gauge(random_speed)
 
-        # Update depth gauge and label
-        self.update_depth_gauge(random_depth)
+            # Update depth gauge and label
+            self.update_depth_gauge(random_depth)
 
-        # Update heading gauge and label
-        heading_value = f"{random_heading:.2f} degrees"
-        self.heading_value.set(heading_value)
+            # Update heading gauge and label
+            heading_value = f"{random_heading:.2f} degrees"
+            self.heading_value.set(heading_value)
 
-        # Update the heading canvas
-        self.update_heading_canvas(random_heading)
-        
-        # Update rpm gauge
-        self.update_rpm_gauge(random_rpm)
+            # Update the heading canvas
+            self.update_heading_canvas(random_heading)
+            
+            # Update rpm gauge
+            self.update_rpm_gauge(random_rpm)
 
-        # Simulated voltage between 10 and 14 volts
-        self.voltage = random.uniform(10, 14)  
+            # Simulated voltage between 10 and 14 volts
+            self.voltage = random.uniform(10, 14)  
 
-        # Check battery voltage
-        self.check_battery_voltage()
-        
-        # Show standby screen
-        if globals.gui_show_standby:
-            self.show_standby()
-        else:
-            self.hide_standby()
+            # Check battery voltage
+            self.check_battery_voltage()
         
         # Schedule the function to be called again after one second
         self.after(1000, self.update_random_values)
