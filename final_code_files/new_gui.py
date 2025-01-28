@@ -69,7 +69,7 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.rpm_canvas.grid(row = 1, column = 1, padx = 10, pady = 10)
 
         # Battery Warning
-        self.battery_warning_label = tk.Label(self, text="", font=("Helvetica", 16), fg="red")
+        self.battery_warning_label = tk.Label(self, text = "", font=("Helvetica", 16), fg = "red")
         self.battery_warning_label.pack()
 
         # Voltage monitoring variables
@@ -77,9 +77,9 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.low_voltage_time = 0  # Timer for low voltage warning
         
         # Standby Overlay
-        self.standby = tk.Frame(self, bg="red", width=600, height=300)
-        self.standby_label = tk.Label(self.standby, text="STANDBY", fg="white", bg="red", font=("Arial", 40))
-        self.standby_label.pack(pady=20)
+        self.standby = tk.Frame(self, bg = "red", width = 600, height = 300)
+        self.standby_label = tk.Label(self.standby, text = "STANDBY", fg = "white", bg = "red", font = ("Arial", 40))
+        self.standby_label.pack(pady = 20)
 
         # Schedule the update_random_values function to be called every second
         self.after(1000, self.update_random_values)
@@ -95,10 +95,10 @@ class SpeedDepthHeadingGauges(tk.Tk):
             self.hide_battery_warning()
     
     def show_battery_warning(self):
-        self.battery_warning_label.config(text="⚠️ Battery Low!")
+        self.battery_warning_label.config(text = "⚠️ Battery Low!")
 
     def hide_battery_warning(self):
-        self.battery_warning_label.config(text="")
+        self.battery_warning_label.config(text = "")
 
     def update_random_values(self):
         # Show standby screen
@@ -132,8 +132,8 @@ class SpeedDepthHeadingGauges(tk.Tk):
             # Simulated voltage between 10 and 14 volts
             self.voltage = random.uniform(10, 14)  
 
-            # Check battery voltage
-            self.check_battery_voltage()
+        # Check battery voltage
+        self.check_battery_voltage()
         
         # Schedule the function to be called again after one second
         self.after(1000, self.update_random_values)
@@ -218,10 +218,11 @@ class SpeedDepthHeadingGauges(tk.Tk):
         
     def show_standby(self): # show the standby message on top of screen
         self.standby.lift()
-        self.standby.place(relx=0.5, rely=0.5, anchor='center')
+        self.standby.place(relx = 0.5, rely = 0.5, anchor = 'center')
 
     def hide_standby(self): # hide standby screen
         self.standby.place_forget()  # Remove the overlay from view
+
 
 # TODO REMOVE THIS FOR FINAL VERSION
 if __name__ == "__main__":
