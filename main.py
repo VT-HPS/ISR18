@@ -20,4 +20,15 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    #main()
+    #run_lights()
+
+    app = SpeedDepthHeadingGauges()
+    #app.mainloop()
+    #t1 = threading.Thread(target=app.mainloop)
+    t2 = threading.Thread(target=run_lights)
+    
+    #t1.start()
+    t2.start()
+
+    app.mainloop()
