@@ -62,7 +62,7 @@ def manage_sensors():
         for i in range(15):
         #while True:
             # read the sensors
-            # PLACEHOLDER VALUES REPLACE WITH FUNCTION CALLS
+            # TODO PLACEHOLDER VALUES REPLACE WITH FUNCTION CALLS
             depth = 0
             water_pressure = 1
             pressure_speed = 2

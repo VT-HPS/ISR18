@@ -42,7 +42,7 @@ def read_pressure():
     pressure_velocity = math.sqrt( (2 * ()))
 
     # print for testing
-    print("Inside Voltage:     ", voltage_reading_1)
+    print("Inside Voltage:     ", voltage_reading_inside)
     print("Inside Depth:   ", depth)
     print("Inside PSIG:    ", water_pressure)
     print("Inside Channel value:  ", channel_1.value)
