@@ -1,13 +1,12 @@
-import board
+#import board
 import time
-import busio
+#import busio
 import math
-import adafruit_ads1x15.ads1115 as ADS
-from adafruit_ads1x15.analog_in import AnalogIn
-from gpiozero import Button
+#import adafruit_ads1x15.ads1115 as ADS
+#from adafruit_ads1x15.analog_in import AnalogIn
+#from gpiozero import Button
 
-
-def read_pressure():
+def _init_(self):
     # Initialize the I2C interface
     i2c = busio.I2C(board.SCL, board.SDA)
 
@@ -17,16 +16,14 @@ def read_pressure():
     # Define the analog input channel
     channel_0 = AnalogIn(ads, ADS.P0) # inside sensor
     channel_1 = AnalogIn(ads, ADS.P1) # nose/outside sensor
-
-
-    # var for formula
-    depth = 0.0
-    water_pressure =  0.0
     water_density = 997 #kg/m^3
 
+
+def read_pressure1(self): # real method
+
     # various readings
-    voltage_reading_inside = channel_0.voltage
-    voltage_reading_outside = channel_1.voltage
+    voltage_reading_inside = self.channel_0.voltage
+    voltage_reading_outside = self.channel_1.voltage
 
     depth_inside = (voltage_reading_inside - 0.075) / 0.092
     depth_outside = (voltage_reading_outside - 0.075) / 0.092
@@ -38,12 +35,9 @@ def read_pressure():
     # units are in Pascals
     pa_pressure_inside = water_pressure_inside * 6894.76
     pa_pressure_outside = water_pressure_outside * 6894.76
+    pressure_velocity = math.sqrt( (2 * (pa_pressure_inside - pa_pressure_outside)) / self.water_density)
 
-    pressure_velocity = math.sqrt( (2 * ()))
+    return depth_inside, water_pressure_inside, pressure_velocity
 
-    # print for testing
-    print("Inside Voltage:     ", voltage_reading_inside)
-    print("Inside Depth:   ", depth)
-    print("Inside PSIG:    ", water_pressure)
-    print("Inside Channel value:  ", channel_1.value)
-    print("\n")
+def read_pressure(): #dummy method
+    return 10.0, 20.0, 30.0 # depth, pressure, velocity

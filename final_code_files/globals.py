@@ -11,3 +11,5 @@ gui_data_buffer = {
     'leak_status': [],
     'temperature': []
 }
+
+print(gui_data_buffer)
