@@ -26,7 +26,7 @@ def manage_sensors():
         run_number = 1
     
     else:
-        # find run number
+        # find run number 
         numbers = []
         runs_list = os.listdir("final_code_files/logs/")
         
