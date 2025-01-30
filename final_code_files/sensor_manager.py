@@ -10,6 +10,10 @@ import Pressure
 import leak
 #from leak import LeakSensor
 
+# temperature pressure imports
+import board
+import adafruit_sht31d
+
 gui_data_buffer = globals.gui_data_buffer
 
 def manage_sensors():
