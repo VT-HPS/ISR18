@@ -1,28 +1,40 @@
 from gpiozero import LED
-from time import sleep
 import RPi.GPIO
-import neopixel_write
 import board
-import digitalio
 
-#from Battery_Warning import check_for_low_battery, check_for_dead_battery
+from sensor_manager import battery_voltage#check_for_low_battery, check_for_dead_battery
+from leak import leak as leak_check
 
-pixel_pin = board.D18
-num_pixels = 1
+white_ledLeak = LED(2)
+#yellow_ledLeak = LED(24) this is probably not needed since leak is either on or off
+red_ledLeak = LED(3)
+
+green_ledBat = LED(17)
+yellow_ledBat = LED(27)
+red_ledBat = LED(22)
 
 
-pin = digitalio.DigitalInOut(board.D18)#uses pin 18 as signal
-pin.direction = digitalio.Direction.OUTPUT
-pixel_on = bytearray([0, 255, 0])
-#pixel_off = bytearray([0,0,0])
-neopixel_write.neopixel_write(pin, pixel_on)
+#while(True):#comment out this "while(True):" when combining code assuming this will just go on the main loop
 
-while(True):
-    #if(check_for_low_battery == True):
-    #    pixel_on = bytearray([255, 255,0])#turns yellow if battery is low
-    #elif(check_for_dead_battery == True):
-        #pixel_on = bytearray([255,0,0])#turns red if battery is dead
-    #else:
-        #pixel_on = bytearray([0, 255, 0])#turns green if battery is ok
-    print("working")
-    neopixel_write.neopixel_write(pin, pixel_on)#lights up led
+    #switches lights if they should change
+white_ledLeak.off()
+red_ledLeak.off()
+    
+green_ledBat.off()
+yellow_ledBat.off()
+red_ledBat.off()
+
+    #battery lights
+if(battery_voltage < 11):
+    red_ledBat.on()#turns red light on if battery is dead
+elif(battery_voltage < 11.5):
+    red_ledBat.on()#turns ryellow on if battery is low
+else:
+    green_ledBat.on()#turns green if battery is ok
+
+    #Leak lights
+if(leak_check == True):
+    red_ledLeak.on()#truns red light on if there is a leak
+else:
+    white_ledLeak.on()#turns white light on if no leak
+    
