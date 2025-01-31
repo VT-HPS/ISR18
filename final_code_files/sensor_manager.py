@@ -6,7 +6,15 @@ import os
 import globals
 import datetime
 import csv
+import Pressure
+import leak
+#from leak import LeakSensor
 
+# temperature pressure imports
+import board
+import adafruit_sht31d
+
+gui_data_buffer = globals.gui_data_buffer
 
 def manage_sensors():
     # see if log directory exists
@@ -18,7 +26,7 @@ def manage_sensors():
         run_number = 1
     
     else:
-        # find run number
+        # find run number 
         numbers = []
         runs_list = os.listdir("final_code_files/logs/")
         
@@ -54,7 +62,8 @@ def manage_sensors():
     ###########################
     
     
-    
+    #leak_sensor = LeakSensor()
+
     
     
     
@@ -62,13 +71,11 @@ def manage_sensors():
         for i in range(15):
         #while True:
             # read the sensors
-            # PLACEHOLDER VALUES REPLACE WITH FUNCTION CALLS
-            depth = 0
-            water_pressure = 1
-            pressure_speed = 2
+            # TODO PLACEHOLDER VALUES REPLACE WITH FUNCTION CALLS
+            depth, water_pressure, pressure_speed = Pressure.read_pressure()
             battery_voltage = 3
             rpm = 4
-            leak_status = 5
+            leak_status = leak.read_leak_status()
             temperature = 6
             
             # write data to global buffer
@@ -79,6 +86,8 @@ def manage_sensors():
             globals.gui_data_buffer['rpm'].append(rpm)
             globals.gui_data_buffer['leak_status'].append(leak_status)
             globals.gui_data_buffer['temperature'].append(temperature)
+
+            print("updated buffer:", gui_data_buffer)
 
             # pop old data from global buffer
             for sensor_key, sensor_data in globals.gui_data_buffer.items():

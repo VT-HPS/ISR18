@@ -1,19 +1,20 @@
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 import time
 
 
+def __init__(self, pin = 23):
+    self.leak_pin = pin
+    #GPIO.setmode(GPIO.BCM)
+    #GPIO.setup(self.leak_pin, GPIO.IN)
 
-GPIO.setmode(GPIO.BCM)
-leak_pin = 23
+def read_leak_status1(self): #real method
+    return GPIO.input(self.leak_pin)
 
-GPIO.setup(leak_pin, GPIO.IN)
-sleep_time = 3
+        # time.sleep(sleep_time)
 
-try:
-    while True:
-        leak = GPIO.input(leak_pin)
-
-       # time.sleep(sleep_time)
-
-finally:
-    GPIO.cleanup()
+def read_leak_status(): # dummy method
+    return False
+    
+def leak_cleanup(self):
+    #GPIO.cleanup()
+    return 0
