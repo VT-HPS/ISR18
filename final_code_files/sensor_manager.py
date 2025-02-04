@@ -1,22 +1,33 @@
 """
-Manages collecting the sensor data, add data to global buffer, log data
+Manages collecting the sensor data, add sensor data to queue, log data into csv
 """
 
 import os
-import globals
 import datetime
 import csv
 import Pressure
 import leak
+import time
+import re
 #from leak import LeakSensor
 
 # temperature pressure imports
 import board
-import adafruit_sht31d
+#import adafruit_sht31d
 
-gui_data_buffer = globals.gui_data_buffer
 
-def manage_sensors():
+"""
+WHAT NEEDS TO BE WORKED ON
+1. Change sensor code to be for one read of the sensor only
+2. Move sensor setup and cleanup code to this file
+"""
+
+
+def manage_sensors(queue):
+    #################
+    # LOGGING SETUP #
+    #################
+    
     # see if log directory exists
     if (not os.path.exists(os.getcwd() + "/final_code_files/logs")):
         # make log directory
@@ -30,9 +41,16 @@ def manage_sensors():
         numbers = []
         runs_list = os.listdir("final_code_files/logs/")
         
+        # regex to extract the run number (last digits before ".csv")
+        # underscore + multiple digits + .csv for the pattern
+        pattern = re.compile(r'_(\d+)\.csv$')
+        
         # loop through each file, store each run number (last character)
         for name in runs_list:
-            numbers.append(int(name[len(name) - 5]))
+            # use regex to store the run number
+            match = pattern.search(name)
+            if match:
+                numbers.append(int(match.group(1)))
             
         # set run number as highest recorded run number (plus one)
         run_number = max(numbers) + 1
@@ -57,9 +75,9 @@ def manage_sensors():
         writer.writerow(header)
         csvfile.close()
         
-    ###########################
-    # PUT SETUP CODE BELOW HERE
-    ###########################
+    ################
+    # SENSOR SETUP #
+    ################
     
     
     #leak_sensor = LeakSensor()
@@ -68,31 +86,36 @@ def manage_sensors():
     
     
     try:
-        for i in range(15):
-        #while True:
+        #for i in range(15):
+        count = 0
+        while True:
+            ##################
+            # SENSOR READING #
+            ##################
+            
             # read the sensors
             # TODO PLACEHOLDER VALUES REPLACE WITH FUNCTION CALLS
-            depth, water_pressure, pressure_speed = Pressure.read_pressure()
+            #depth, water_pressure, pressure_speed = Pressure.read_pressure()
+            # THE FOLLOWING IS TEMPORARY DUMMY DATA
+            depth = count + 1
+            water_pressure = count + 6
+            pressure_speed = count + 10
             battery_voltage = 3
-            rpm = 4
+            rpm = count
             leak_status = leak.read_leak_status()
-            temperature = 6
+            temperature = count + 8
             
-            # write data to global buffer
-            globals.gui_data_buffer['depth'].append(depth)
-            globals.gui_data_buffer['water_pressure'].append(water_pressure)
-            globals.gui_data_buffer['pressure_speed'].append(pressure_speed)
-            globals.gui_data_buffer['battery_voltage'].append(battery_voltage)
-            globals.gui_data_buffer['rpm'].append(rpm)
-            globals.gui_data_buffer['leak_status'].append(leak_status)
-            globals.gui_data_buffer['temperature'].append(temperature)
-
-            print("updated buffer:", gui_data_buffer)
-
-            # pop old data from global buffer
-            for sensor_key, sensor_data in globals.gui_data_buffer.items():
-                    if len(sensor_data) > 4:
-                        sensor_data.pop()
+            gui_data_buffer = {
+                'depth': depth,
+                'water_pressure': water_pressure,
+                'pressure_speed': pressure_speed,
+                'battery_voltage': battery_voltage,
+                'rpm': rpm,
+                'leak_status': leak_status,
+                'temperature': temperature
+            }
+            queue.put(gui_data_buffer)
+            count += 1 # TEMPORARY TESTING CODE
             
             # write data to csv
             with open(filename, 'a') as csvfile:
@@ -108,22 +131,14 @@ def manage_sensors():
                 writer = csv.writer(csvfile)
                 writer.writerow(data)
                 csvfile.close()
+            time.sleep(1)
         
     finally:
+        ##################
+        # SENSOR CLEANUP #
+        ##################
+        
         # cleanup everything (gpio, pwm, file naming)
         """ Here we need to pull some of the cleaunp code from the sensors. Anything from
         the sensor stuff right now should probably end up here"""
         pass
-
-
-# TODO REMOVE FOR FINAL VERSION
-if __name__ == "__main__":
-    manage_sensors()
-
-    # What do you want me to work on? - Wyatt
-# what would be great is if you can go into each of the sensors files and take them out of a loop
-# also we need to move their setup code to here i think? because we want each of the sensors to just provide
-# a function to read one value at a time so we can run all of them here in a while loop
-# so like the temp sensor would have like read_temp() and we can call that and it returns one value
-# we then log that and pass to global buffer
-# actually i didn't think about the setup code that might be an issue? probably not tho

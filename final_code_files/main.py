@@ -22,37 +22,31 @@ second button press:
     cleanup functions for sensors (gpio, pwm)
     put back into standby (back to standby)
 """
-from new_gui import SpeedDepthHeadingGauges
-from lights import run_lights
-import globals
+import new_gui
 import threading
+import sensor_manager
+from queue import Queue
+#import lights
 
 
-# THIS FILE IS A MESS RIGHT NOW
-# the important thing is in the section: if __name__ == "__main__"
-# this is the code that shows that we can do threading. more to come soon
-
+# currently we are missing some functionality with the button presses and such. 
+# this code right now runs the sensor manager and the gui. 
 def main():
-    # start the gui
-    app = SpeedDepthHeadingGauges()
-    t1 = threading.Thread(target=app.mainloop())
-    t2 = threading.Thread(target=run_lights())
+    # create the queue for sensor data
+    sensor_data_queue = Queue()
     
-    t1.start()
-    t2.start()
+    # create and run sensor manager thread
+    sensor_thread = threading.Thread(target = sensor_manager.manage_sensors, daemon = True, args = (sensor_data_queue, ))
+    sensor_thread.start()
+    
+    # create and run lights thread
+    #lights_thread = threading.Thread(target = lights.run_lights, daemon = True)
+    #lights_thread.start()
 
+    # create and run gui (MUST BE RUN AT END OF METHOD)
+    app = new_gui.SpeedDepthHeadingGauges(sensor_data_queue)
+    app.mainloop()
 
 
 if __name__ == "__main__":
-    #main()
-    #run_lights()
-
-    app = SpeedDepthHeadingGauges()
-    #app.mainloop()
-    #t1 = threading.Thread(target=app.mainloop)
-    t2 = threading.Thread(target=run_lights)
-    
-    #t1.start()
-    t2.start()
-
-    app.mainloop()
+    main()
