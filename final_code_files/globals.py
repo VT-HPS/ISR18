@@ -1,6 +1,6 @@
 # hold global constants here for all files to access
 
-gui_show_standby = True
+gui_show_standby = False
 
 gui_data_buffer = {
     'depth': [],
