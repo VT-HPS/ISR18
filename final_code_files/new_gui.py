@@ -3,12 +3,17 @@ from tkinter import ttk
 import random
 import math
 from numpy import interp
+import time
 import globals
+import queue
 
 class SpeedDepthHeadingGauges(tk.Tk):
-    def __init__(self):
+    def __init__(self, sensor_data_queue):
         super().__init__()
 
+        self.sensor_data_queue = sensor_data_queue
+        self.data = None
+        
         default_background_color = self.cget("bg")
         
         self.title("HPS HUD")
@@ -83,7 +88,8 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.standby_label.pack(pady = 20)
 
         # Schedule the update_random_values function to be called every second
-        self.after(1000, self.update_random_values)
+        #self.after(1000, self.update_random_values(sensor_data_queue))
+        self.update_random_values()
 
     # If voltage < 12 for more than 3 seconds then it shows the warning, hides otherwise
     def check_battery_voltage(self):
@@ -106,19 +112,32 @@ class SpeedDepthHeadingGauges(tk.Tk):
         if globals.gui_show_standby:
             self.show_standby()
         else:
+            # TESTING CODE FOR QUEUE
+            try:
+                data = self.sensor_data_queue.get_nowait()
+                print(f"new data: {data}")
+                self.data = data
+            except queue.Empty:
+                print("queue is empty")
+                data = self.data
+                pass
+            
+            
             self.hide_standby()
         
             # Generate random speed, depth, and heading values
-            random_speed = random.uniform(0, 5)
-            random_depth = random.uniform(0, 30)
+            #random_speed = random.uniform(0, 5)
+            #random_depth = random.uniform(0, 30)
             random_heading = random.uniform(0, 360)
-            random_rpm = random.uniform(0, 200) # placeholder max rpm
+            #random_rpm = random.uniform(0, 200) # placeholder max rpm
 
             # Update speed gauge and label
-            self.update_speed_gauge(random_speed)
+            #self.update_speed_gauge(random_speed)
+            self.update_speed_gauge(data["pressure_speed"])
 
             # Update depth gauge and label
-            self.update_depth_gauge(random_depth)
+            #self.update_depth_gauge(random_depth)
+            self.update_depth_gauge(data["depth"])
 
             # Update heading gauge and label
             heading_value = f"{random_heading:.2f} degrees"
@@ -128,10 +147,12 @@ class SpeedDepthHeadingGauges(tk.Tk):
             self.update_heading_canvas(random_heading)
             
             # Update rpm gauge
-            self.update_rpm_gauge(random_rpm)
+            #self.update_rpm_gauge(random_rpm)
+            self.update_rpm_gauge(data["rpm"])
 
             # Simulated voltage between 10 and 14 volts
-            self.voltage = random.uniform(10, 14)  
+            #self.voltage = random.uniform(10, 14)  
+            self.voltage = data["battery_voltage"]
 
         # Check battery voltage
         self.check_battery_voltage()
@@ -226,6 +247,6 @@ class SpeedDepthHeadingGauges(tk.Tk):
 
 
 # TODO REMOVE THIS FOR FINAL VERSION
-if __name__ == "__main__":
-    app = SpeedDepthHeadingGauges()
-    app.mainloop()
+#if __name__ == "__main__":
+    #app = SpeedDepthHeadingGauges()
+    #app.mainloop()
