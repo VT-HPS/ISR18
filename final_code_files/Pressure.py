@@ -1,43 +1,90 @@
-#import board
+import csv
 import time
-#import busio
+import os
+import datetime
 import math
-#import adafruit_ads1x15.ads1115 as ADS
-#from adafruit_ads1x15.analog_in import AnalogIn
-#from gpiozero import Button
+import board
+import busio
+import adafruit_ads1x15.ads1115 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
+from gpiozero import Button
 
-def _init_(self):
-    # Initialize the I2C interface
-    i2c = busio.I2C(board.SCL, board.SDA)
+class PressureSensor:
+    def __init__(self):
+        # Initialize the I2C interface for communication with the ADS1115 ADC
+        i2c = busio.I2C(board.SCL, board.SDA)
 
-    # Create an ADS 1115 object
-    ads = ADS.ADS1115(i2c)
+        # Create an ADS 1115 object to interface with the ADC
+        ads = ADS.ADS1115(i2c)
 
-    # Define the analog input channel
-    channel_0 = AnalogIn(ads, ADS.P0) # inside sensor
-    channel_1 = AnalogIn(ads, ADS.P1) # nose/outside sensor
-    water_density = 997 #kg/m^3
+        # Define the analog input channels for the pressure sensors
+        self.channel_0 = AnalogIn(ads, ADS.P0) # Inside sensor
+        self.channel_1 = AnalogIn(ads, ADS.P1) # Outside/nose sensor
+        self.water_density = 997  # Density of water in kg/m^3
 
+        # Setup log directory and ensure it exists
+        log_dir = "pressure_logs"
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
+            run_number = 1
+        else:
+            # if a file exists, find the run number and increase it for new file.
+            numbers = [int(f.split('_')[-1].split('.')[0]) for f in os.listdir(log_dir) if f.endswith(".csv")]
+            run_number = max(numbers) + 1 if numbers else 1
 
-def read_pressure1(self): # real method
+        # timestamped filename for storing the data
+        curr_time = datetime.datetime.now()
+        self.filename = f"{log_dir}/{curr_time.month}_{curr_time.day}_{curr_time.hour}_{curr_time.minute}_{run_number}.csv"
 
-    # various readings
-    voltage_reading_inside = self.channel_0.voltage
-    voltage_reading_outside = self.channel_1.voltage
+        # header to CSV file
+        with open(self.filename, 'a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["Timestamp", "Depth Inside (ft)", "Pressure Inside (PSIG)", "Velocity (m/s)", "Depth Outside (m)", "Pressure Outside (PSIG)"])
 
-    depth_inside = (voltage_reading_inside - 0.075) / 0.092
-    depth_outside = (voltage_reading_outside - 0.075) / 0.092
+    def read_pressure(self):  # Read and process sensor data
+        # Read voltage values from the sensors
+        voltage_reading_inside = self.channel_0.voltage
+        voltage_reading_outside = self.channel_1.voltage
 
-    # units are PSIG
-    water_pressure_inside = depth_inside * 0.433
-    water_pressure_outside = depth_outside * 0.433 # static pressure
+        # Convert voltage readings to depth (in feet)
+        depth_inside = (voltage_reading_inside - 0.075) / 0.092
+        depth_outside = (voltage_reading_outside - 0.075) / 0.092
 
-    # units are in Pascals
-    pa_pressure_inside = water_pressure_inside * 6894.76
-    pa_pressure_outside = water_pressure_outside * 6894.76
-    pressure_velocity = math.sqrt( (2 * (pa_pressure_inside - pa_pressure_outside)) / self.water_density)
+        # Convert depth values to pressure (in PSIG)
+        water_pressure_inside = depth_inside * 0.433
+        water_pressure_outside = depth_outside * 0.433  # Static pressure
 
-    return depth_inside, water_pressure_inside, pressure_velocity
+        # Convert pressure values to Pascals
+        pa_pressure_inside = water_pressure_inside * 6894.76
+        pa_pressure_outside = water_pressure_outside * 6894.76
 
-def read_pressure(): #dummy method
-    return 10.0, 20.0, 30.0 # depth, pressure, velocity
+        # Calculate velocity using Bernoulli's equation
+        pressure_velocity = math.sqrt((2 * (pa_pressure_inside - pa_pressure_outside)) / self.water_density)
+
+        return depth_inside, water_pressure_inside, pressure_velocity, depth_outside, water_pressure_outside
+
+    def log_data(self, interval=1):
+        # Continuously log data at a specified interval
+        with open(self.filename, mode='a', newline='') as file:
+            writer = csv.writer(file)
+            try:
+                while True:
+                    # Read sensor data
+                    depth_inside, pressure_inside, velocity, depth_outside, pressure_outside = self.read_pressure()
+                    timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+
+                    # Write data to CSV file
+                    writer.writerow([timestamp, depth_inside, pressure_inside, velocity, depth_outside, pressure_outside])
+
+                    # Print the recorded values to the console for real-time monitoring
+                    print(f"{timestamp}, Depth Inside: {depth_inside:.2f}ft, Pressure Inside: {pressure_inside:.2f} PSIG, Velocity: {velocity:.2f} m/s, Depth Outside: {depth_outside:.2f}ft, Pressure Outside: {pressure_outside:.2f} PSIG")
+                    
+                    # Wait for the specified interval before recording next data point
+                    time.sleep(interval)
+            except KeyboardInterrupt:
+                # Stop logging when user interrupts the process (Ctrl+C)
+                print("Logging stopped.")
+
+if __name__ == "__main__":
+    sensor = PressureSensor()
+    sensor.log_data()
