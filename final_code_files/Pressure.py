@@ -3,6 +3,7 @@ import time
 import os
 import datetime
 import math
+import random
 import board
 import busio
 import adafruit_ads1x15.ads1115 as ADS
@@ -59,9 +60,18 @@ class PressureSensor:
         pa_pressure_outside = water_pressure_outside * 6894.76
 
         # Calculate velocity using Bernoulli's equation
-        pressure_velocity = math.sqrt((2 * (pa_pressure_inside - pa_pressure_outside)) / self.water_density)
+        velocity_squared = (2 * (pa_pressure_inside - pa_pressure_outside)) / self.water_density
+
+        # Handle negative velocity squared cases
+        # Handle negative velocity for reverse motion
+        if velocity_squared < 0:
+            pressure_velocity = -math.sqrt(abs(velocity_squared))  # Reverse flow
+            print(f"Warning: Reverse flow: Velocity: {pressure_velocity:.2f} m/s")
+        else:
+            pressure_velocity = math.sqrt(velocity_squared)  # Normal forward flow
 
         return depth_inside, water_pressure_inside, pressure_velocity, depth_outside, water_pressure_outside
+
 
     def log_data(self, interval=1):
         # Continuously log data at a specified interval
