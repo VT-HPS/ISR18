@@ -40,12 +40,16 @@ class PressureSensor:
         # header to CSV file
         with open(self.filename, 'a', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(["Timestamp", "Depth Inside (ft)", "Pressure Inside (PSIG)", "Velocity (m/s)", "Depth Outside (m)", "Pressure Outside (PSIG)"])
+            writer.writerow(["Timestamp", "Depth Inside (ft)", "Pressure Inside (PSIG)", "Velocity (m/s)", "Depth Outside (m)", "Pressure Outside (PSIG)", "Voltage Inside", "Voltage Outside", "Channel Inside", "Channel Outside"])
 
     def read_pressure(self):  # Read and process sensor data
-        # Read voltage values from the sensors
+
         voltage_reading_inside = self.channel_0.voltage
         voltage_reading_outside = self.channel_1.voltage
+
+        # Channel values from the sensors
+        channel_reading_inside = self.channel_0.value
+        channel_reading_outside = self.channel_1.value
 
         # Convert voltage readings to depth (in feet)
         depth_inside = (voltage_reading_inside - 0.075) / 0.092
@@ -70,7 +74,9 @@ class PressureSensor:
         else:
             pressure_velocity = math.sqrt(velocity_squared)  # Normal forward flow
 
-        return depth_inside, water_pressure_inside, pressure_velocity, depth_outside, water_pressure_outside
+        return depth_inside, water_pressure_inside, pressure_velocity, depth_outside, water_pressure_outside, voltage_reading_inside, voltage_reading_outside, channel_reading_inside, channel_reading_outside
+
+        #return depth_inside, water_pressure_inside, pressure_velocity, depth_outside, water_pressure_outside
 
 
     def log_data(self, interval=1):
@@ -80,11 +86,11 @@ class PressureSensor:
             try:
                 while True:
                     # Read sensor data
-                    depth_inside, pressure_inside, velocity, depth_outside, pressure_outside = self.read_pressure()
+                    depth_inside, pressure_inside, velocity, depth_outside, pressure_outside, voltage_inside, voltage_outside, channel_inside, channel_outside = self.read_pressure()
                     timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
 
                     # Write data to CSV file
-                    writer.writerow([timestamp, depth_inside, pressure_inside, velocity, depth_outside, pressure_outside])
+                    writer.writerow([timestamp, depth_inside, pressure_inside, velocity, depth_outside, pressure_outside, voltage_inside, voltage_outside, channel_inside, channel_outside])
 
                     # Print the recorded values to the console for real-time monitoring
                     print(f"{timestamp}, Depth Inside: {depth_inside:.2f}ft, Pressure Inside: {pressure_inside:.2f} PSIG, Velocity: {velocity:.2f} m/s, Depth Outside: {depth_outside:.2f}ft, Pressure Outside: {pressure_outside:.2f} PSIG")
