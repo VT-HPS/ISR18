@@ -79,7 +79,7 @@ class PressureSensor:
         #return depth_inside, water_pressure_inside, pressure_velocity, depth_outside, water_pressure_outside
 
 
-    def log_data(self, interval=1):
+    def log_data(self, interval=0.5):
         # Continuously log data at a specified interval
         with open(self.filename, mode='a', newline='') as file:
             writer = csv.writer(file)
