@@ -82,7 +82,10 @@ def manage_sensors(queue):
     # SENSOR SETUP #
     ################
     
+    #pressure sensor
+    pressure_sensor = Pressure.PressureSensor()
     
+
     #leak_sensor = LeakSensor()
 
     #temperature sensor
@@ -100,12 +103,13 @@ def manage_sensors(queue):
             ##################
             
             # read the sensors
+            pressure_data = pressure_sensor.read_pressure()
             # TODO PLACEHOLDER VALUES REPLACE WITH FUNCTION CALLS
             #depth, water_pressure, pressure_speed = Pressure.read_pressure()
             # THE FOLLOWING IS TEMPORARY DUMMY DATA
-            depth = count + 1
-            water_pressure = count + 6
-            pressure_speed = count + 10
+            depth = pressure_data[3]
+            water_pressure = pressure_data[4]
+            pressure_speed = pressure_data[2]
             battery_voltage = 3
             rpm = count
             leak_status = leak.read_leak_status()
