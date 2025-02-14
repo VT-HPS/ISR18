@@ -5,7 +5,7 @@ Manages collecting the sensor data, add sensor data to queue, log data into csv
 import os
 import datetime
 import csv
-import Pressure
+import final_code_files.pressure as pressure
 import leak
 import time
 import re
@@ -83,7 +83,7 @@ def manage_sensors(queue):
     ################
     
     #pressure sensor
-    pressure_sensor = Pressure.PressureSensor()
+    pressure_sensor = pressure.PressureSensor()
     
 
     #leak_sensor = LeakSensor()
