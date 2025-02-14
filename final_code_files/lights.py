@@ -1,3 +1,5 @@
+
+
 import RPi.GPIO as GPIO #imports servo library
 import time
 
@@ -26,15 +28,11 @@ def run_lights():
     pwm.start(11) # starts the signal at the minmum value (11-19)
     time.sleep(4)
     try:
-        while True: # dont need sleep time bc of duty cycle
-            
-            switch = True # switch is 1, which means lights should be on
-
-            if(switch):
-                pwm.ChangeDutyCycle(19)
-
-            else:
-                pwm.ChangeDutyCycle(0)
+        pwm.ChangeDutyCycle(13)
+        time.sleep(4)
+        pwm.ChangeDutyCycle(17)
+        time.sleep(4)
+        pwm.ChangeDutyCycle(0)
         
 
     finally:
