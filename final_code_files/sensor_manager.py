@@ -5,7 +5,7 @@ Manages collecting the sensor data, add sensor data to queue, log data into csv
 import os
 import datetime
 import csv
-import Pressure
+import final_code_files.pressure as pressure
 import leak
 import time
 import re
@@ -13,7 +13,9 @@ import re
 
 # temperature pressure imports
 import board
-#import adafruit_sht31d
+import adafruit_sht31d
+import temperature_humidity
+
 
 
 """
@@ -27,6 +29,7 @@ def manage_sensors(queue):
     #################
     # LOGGING SETUP #
     #################
+
     
     # see if log directory exists
     if (not os.path.exists(os.getcwd() + "/final_code_files/logs")):
@@ -79,9 +82,15 @@ def manage_sensors(queue):
     # SENSOR SETUP #
     ################
     
+    #pressure sensor
+    pressure_sensor = pressure.PressureSensor()
     
+
     #leak_sensor = LeakSensor()
 
+    #temperature sensor
+    i2c = board.I2C(board.SCL, board.SDA)
+    temp_sensor = adafruit_sht31d.SHT31D(i2c)
     
     
     
@@ -94,16 +103,17 @@ def manage_sensors(queue):
             ##################
             
             # read the sensors
+            pressure_data = pressure_sensor.read_pressure()
             # TODO PLACEHOLDER VALUES REPLACE WITH FUNCTION CALLS
             #depth, water_pressure, pressure_speed = Pressure.read_pressure()
             # THE FOLLOWING IS TEMPORARY DUMMY DATA
-            depth = count + 1
-            water_pressure = count + 6
-            pressure_speed = count + 10
+            depth = pressure_data[3]
+            water_pressure = pressure_data[4]
+            pressure_speed = pressure_data[2]
             battery_voltage = 3
             rpm = count
             leak_status = leak.read_leak_status()
-            temperature = count + 8
+            temperature = temperature_humidity.read_temp(temp_sensor)
             
             gui_data_buffer = {
                 'depth': depth,
