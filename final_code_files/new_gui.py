@@ -13,6 +13,7 @@ class SpeedDepthHeadingGauges(tk.Tk):
 
         self.sensor_data_queue = sensor_data_queue
         self.data = None
+        self.standby_bool = True
         
         default_background_color = self.cget("bg")
         
@@ -108,10 +109,8 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.battery_warning_label.config(text = "")
 
     def update_random_values(self):
-        # Show standby screen
-        if globals.gui_show_standby:
-            self.show_standby()
-        else:
+        # Run data if the screen is not in standby
+        if not self.standby_bool:
             # TESTING CODE FOR QUEUE
             try:
                 data = self.sensor_data_queue.get_nowait()
@@ -123,21 +122,20 @@ class SpeedDepthHeadingGauges(tk.Tk):
                 pass
             
             
-            self.hide_standby()
         
             # Generate random speed, depth, and heading values
-            #random_speed = random.uniform(0, 5)
-            #random_depth = random.uniform(0, 30)
+            random_speed = random.uniform(0, 5)
+            random_depth = random.uniform(0, 30)
             random_heading = random.uniform(0, 360)
-            #random_rpm = random.uniform(0, 200) # placeholder max rpm
+            random_rpm = random.uniform(0, 200) # placeholder max rpm
 
             # Update speed gauge and label
-            #self.update_speed_gauge(random_speed)
-            self.update_speed_gauge(data["pressure_speed"])
+            self.update_speed_gauge(random_speed)
+            #self.update_speed_gauge(data["pressure_speed"])
 
             # Update depth gauge and label
-            #self.update_depth_gauge(random_depth)
-            self.update_depth_gauge(data["depth"])
+            self.update_depth_gauge(random_depth)
+            #self.update_depth_gauge(data["depth"])
 
             # Update heading gauge and label
             heading_value = f"{random_heading:.2f} degrees"
@@ -147,12 +145,12 @@ class SpeedDepthHeadingGauges(tk.Tk):
             self.update_heading_canvas(random_heading)
             
             # Update rpm gauge
-            #self.update_rpm_gauge(random_rpm)
-            self.update_rpm_gauge(data["rpm"])
+            self.update_rpm_gauge(random_rpm)
+            #self.update_rpm_gauge(data["rpm"])
 
             # Simulated voltage between 10 and 14 volts
-            #self.voltage = random.uniform(10, 14)  
-            self.voltage = data["battery_voltage"]
+            self.voltage = random.uniform(10, 14)  
+            #self.voltage = data["battery_voltage"]
 
         # Check battery voltage
         self.check_battery_voltage()
@@ -238,11 +236,13 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.rpm_canvas.create_text(half_width, 15, text = "100", font = ("Helvetica 10")) # top
         self.rpm_canvas.create_text(half_width * 2 - 20, half_height - 10, text = "200", font = ("Helvetica 10")) # right
         
-    def show_standby(self): # show the standby message on top of screen
+    def set_standby(self): # show the standby message on top of screen
+        self.standby_bool = True
         self.standby.lift()
         self.standby.place(relx = 0.5, rely = 0.5, anchor = 'center')
 
-    def hide_standby(self): # hide standby screen
+    def set_active(self): # hide standby screen
+        self.standby_bool = False
         self.standby.place_forget()  # Remove the overlay from view
 
 

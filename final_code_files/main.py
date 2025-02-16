@@ -4,6 +4,9 @@ Look into using the rc.local file on pi to run this file on startup
 We need to spin off the rpm sensor separately, the lights on their own, and the gui on its own
 Probably use a try:except here in main for main code so that a keyboard interrupt will tear down
 everything and shut down sensors correctly
+So it also turns out that the gui needs to be run separately outside of the main function for anything to work
+Since the gui is "blocking", it doesn't let anything else run alongside so the main() function is being
+run as its own thread so they run concurrently
 
 
 turn on:
@@ -20,7 +23,7 @@ first button press:
 second button press:
     turn everything off
     cleanup functions for sensors (gpio, pwm)
-    put back into standby (back to standby)
+    put back into standby
 """
 import new_gui
 import threading
@@ -28,16 +31,30 @@ import sensor_manager
 from queue import Queue
 from gpiozero import Button
 #import lights
+import stoppable_thread
 
 
-# currently we are missing some functionality with the button presses and such. 
-# this code right now runs the sensor manager and the gui. 
-def main():
+def main(queue, gui):
+    # SETUP CODE HERE - things to run only once, like GPIO for the lights
     button = Button(2) # placeholder pin for now, don't know what this should be
     prev_state = 0
-    standby = True
-    switch = False
+    standby = False
+    switch = True
     
+    # create and run rpm thread
+    # TODO need a file for this lmao
+    #rpm_thread = threading.Thread(target=rpm.monitor_rpm, daemon=True, args=(queue,))
+    #rpm_thread.start()
+    
+    # create and run sensor manager thread
+    sensor_thread = threading.Thread(target = sensor_manager.manage_sensors, daemon = True, args = (queue, ))
+    sensor_thread.start()
+    
+    # TODO probably hank's rgb lights here
+    #rgb_thread = threading.Thread(target = PLACEHOLDER, daemon = True, args = (PLACEHOLDER, ))
+    #rgb_thread.start()
+    
+    # main loop, takes care of state switching and launching threads when necessary
     while True:
         curr_state = button.value
         if (prev_state == 1 and curr_state == 0):
@@ -48,9 +65,19 @@ def main():
             standby = not standby # changes the current state
             
             if standby: # sets it to standby state, kills old threads and makes new ones
+                # Start the lights thread for standby
+                #standby_lights = StoppableThread(target = PLACEHOLDER, daemon = True)
+                #standby_lights.start()
+                
+                # Set GUI to be in standby mode
                 pass
             
             else: # sets to active state, turns everything on
+                # Start the lights thread for active
+                #active_lights = StoppableThread(target = PLACEHOLDER, daemon = True)
+                #active_lights.start()
+                
+                # Set GUI to be in active mode
                 pass
 
         prev_state = curr_state
@@ -58,25 +85,30 @@ def main():
         break
     
     
-    # create the queue for sensor data
-    sensor_data_queue = Queue()
-    
-    # create and run sensor manager thread
-    sensor_thread = threading.Thread(target = sensor_manager.manage_sensors, daemon = True, args = (sensor_data_queue, ))
-    sensor_thread.start()
-    
     # create and run lights thread
     #lights_thread = threading.Thread(target = lights.run_lights, daemon = True)
     #lights_thread.start()
 
-    # create and run rpm thread
-    #rpm_thread = threading.Thread(target=rpm.monitor_rpm, daemon=True, args=(sensor_data_queue,))
-    # rpm_thread.start()
-
-    # create and run gui (MUST BE RUN AT END OF METHOD)
-    app = new_gui.SpeedDepthHeadingGauges(sensor_data_queue)
-    app.mainloop()
+def testing(gui):
+    while True:
+        gui.set_standby()
+        import time
+        time.sleep(3)
+        gui.set_active()
 
 
 if __name__ == "__main__":
-    main()
+    # create the queue for sensor data
+    sensor_data_queue = Queue()
+    
+    # initialize gui to pass into main
+    gui = new_gui.SpeedDepthHeadingGauges(sensor_data_queue)
+    
+    # initialize and run main function as a thread
+    #main_thread = threading.Thread(target = main, args = (sensor_data_queue, gui, ), daemon = True)
+    #main_thread.start()
+    test = threading.Thread(target = testing, args = (gui, ), daemon = True)
+    test.start()
+    
+    # run gui - MUST BE AT END
+    gui.mainloop()
