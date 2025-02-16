@@ -43,6 +43,10 @@ def main():
     #lights_thread = threading.Thread(target = lights.run_lights, daemon = True)
     #lights_thread.start()
 
+    # create and run rpm thread
+    #rpm_thread = threading.Thread(target=rpm.monitor_rpm, daemon=True, args=(sensor_data_queue,))
+    # rpm_thread.start()
+
     # create and run gui (MUST BE RUN AT END OF METHOD)
     app = new_gui.SpeedDepthHeadingGauges(sensor_data_queue)
     app.mainloop()
