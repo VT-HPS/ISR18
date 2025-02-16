@@ -26,12 +26,38 @@ import new_gui
 import threading
 import sensor_manager
 from queue import Queue
+from gpiozero import Button
 #import lights
 
 
 # currently we are missing some functionality with the button presses and such. 
 # this code right now runs the sensor manager and the gui. 
 def main():
+    button = Button(2) # placeholder pin for now, don't know what this should be
+    prev_state = 0
+    standby = True
+    switch = False
+    
+    while True:
+        curr_state = button.value
+        if (prev_state == 1 and curr_state == 0):
+            # change the state
+            switch = True
+        
+        if switch: # indicates switching of states
+            standby = not standby # changes the current state
+            
+            if standby: # sets it to standby state, kills old threads and makes new ones
+                pass
+            
+            else: # sets to active state, turns everything on
+                pass
+
+        prev_state = curr_state
+        switch = False
+        break
+    
+    
     # create the queue for sensor data
     sensor_data_queue = Queue()
     
