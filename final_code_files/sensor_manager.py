@@ -5,7 +5,7 @@ Manages collecting the sensor data, add sensor data to queue, log data into csv
 import os
 import datetime
 import csv
-import final_code_files.pressure as pressure
+import pressure
 import leak
 import time
 import re
