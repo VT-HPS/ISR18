@@ -70,6 +70,7 @@ def main(queue):
                 #standby_lights.start()
                 
                 # Set GUI to be in standby mode
+                gui.set_standby()
                 pass
             
             else: # sets to active state, turns everything on
@@ -78,6 +79,7 @@ def main(queue):
                 #active_lights.start()
                 
                 # Set GUI to be in active mode
+                gui.set_active()
                 pass
 
         prev_state = curr_state
@@ -89,15 +91,6 @@ def main(queue):
     #lights_thread = threading.Thread(target = lights.run_lights, daemon = True)
     #lights_thread.start()
 
-def testing():
-    import time
-    while True:
-        gui.set_standby()
-        time.sleep(2)
-        gui.set_active()
-        time.sleep(2)
-
-
 if __name__ == "__main__":
     # create the queue for sensor data
     sensor_data_queue = Queue()
@@ -106,10 +99,8 @@ if __name__ == "__main__":
     gui = new_gui.SpeedDepthHeadingGauges(sensor_data_queue)
     
     # initialize and run main function as a thread
-    #main_thread = threading.Thread(target = main, args = (sensor_data_queue, gui, ), daemon = True)
-    #main_thread.start()
-    test = threading.Thread(target = testing, daemon = True)
-    test.start()
+    main_thread = threading.Thread(target = main, args = (sensor_data_queue, ), daemon = True)
+    main_thread.start()
     
     # run gui - MUST BE AT END
     gui.mainloop()

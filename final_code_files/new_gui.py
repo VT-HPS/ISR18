@@ -147,9 +147,9 @@ class SpeedDepthHeadingGauges(tk.Tk):
             self.update_rpm_gauge(random_rpm)
             #self.update_rpm_gauge(data["rpm"])
 
-            # Simulated voltage between 10 and 14 volts
-            self.voltage = random.uniform(10, 14)  
-            #self.voltage = data["battery_voltage"]
+        # Simulated voltage between 10 and 14 volts
+        self.voltage = random.uniform(10, 14)  
+        #self.voltage = data["battery_voltage"]
 
         # Check battery voltage
         self.check_battery_voltage()
