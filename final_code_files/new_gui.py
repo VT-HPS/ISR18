@@ -4,7 +4,6 @@ import random
 import math
 from numpy import interp
 import time
-import globals
 import queue
 
 class SpeedDepthHeadingGauges(tk.Tk):
@@ -240,10 +239,12 @@ class SpeedDepthHeadingGauges(tk.Tk):
         self.standby_bool = True
         self.standby.lift()
         self.standby.place(relx = 0.5, rely = 0.5, anchor = 'center')
+        print("set to standby")
 
     def set_active(self): # hide standby screen
         self.standby_bool = False
         self.standby.place_forget()  # Remove the overlay from view
+        print("set to active")
 
 
 # TODO REMOVE THIS FOR FINAL VERSION

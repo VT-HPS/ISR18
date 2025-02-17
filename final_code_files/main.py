@@ -34,7 +34,7 @@ from gpiozero import Button
 import stoppable_thread
 
 
-def main(queue, gui):
+def main(queue):
     # SETUP CODE HERE - things to run only once, like GPIO for the lights
     button = Button(2) # placeholder pin for now, don't know what this should be
     prev_state = 0
@@ -89,12 +89,13 @@ def main(queue, gui):
     #lights_thread = threading.Thread(target = lights.run_lights, daemon = True)
     #lights_thread.start()
 
-def testing(gui):
+def testing():
+    import time
     while True:
         gui.set_standby()
-        import time
-        time.sleep(3)
+        time.sleep(2)
         gui.set_active()
+        time.sleep(2)
 
 
 if __name__ == "__main__":
@@ -107,7 +108,7 @@ if __name__ == "__main__":
     # initialize and run main function as a thread
     #main_thread = threading.Thread(target = main, args = (sensor_data_queue, gui, ), daemon = True)
     #main_thread.start()
-    test = threading.Thread(target = testing, args = (gui, ), daemon = True)
+    test = threading.Thread(target = testing, daemon = True)
     test.start()
     
     # run gui - MUST BE AT END

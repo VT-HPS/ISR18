@@ -1,5 +1,3 @@
-
-
 import RPi.GPIO as GPIO #imports servo library
 import time
 
