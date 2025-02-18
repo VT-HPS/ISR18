@@ -24,6 +24,8 @@ def testing():
     
     standby_lights = StoppableThread(target = lights.run_standby_lights, args = (pwm, ), daemon = True)
     active_lights = StoppableThread(target = lights.run_active_lights, args = (pwm, ), daemon = True)
+    standby_lights.start()
+    active_lights.start()
     
     # main loop, takes care of state switching and launching threads when necessary
     while True:
@@ -37,8 +39,8 @@ def testing():
             
             if standby: # sets it to standby state, kills old threads and makes new ones
                 # Start the lights thread for standby
-                active_lights.stop()
-                standby_lights.start()
+                active_lights.deactivate()
+                standby_lights.activate()
                 
                 # Set GUI to be in standby mode
                 #gui.set_standby()
@@ -47,8 +49,8 @@ def testing():
             
             else: # sets to active state, turns everything on
                 # Start the lights thread for standby
-                standby_lights.stop()
-                active_lights.start()
+                standby_lights.deactivate()
+                active_lights.activate()
                 
                 # Set GUI to be in active mode
                 #gui.set_active()

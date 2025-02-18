@@ -40,9 +40,10 @@ def run_lights():
         
         
 def run_standby_lights(thread, pwm):
-    while (not thread.stopped()):
-        print("standby lights")
-        time.sleep(1)
+    while True:
+        if thread.activated():
+            print("standby lights")
+            time.sleep(1)
     
     """while (not thread.stopped()):
         pwm.ChangeDutyCycle(13)
@@ -53,9 +54,10 @@ def run_standby_lights(thread, pwm):
 
 
 def run_active_lights(thread, pwm):
-    while (not thread.stopped()):
-        print("active lights")
-        time.sleep(1)
+    while True:
+        if thread.activated():
+            print("active lights")
+            time.sleep(1)
     
     '''while (not thread.stopped()):
         pwm.ChangeDutyCycle(11)
