@@ -2,6 +2,9 @@ import new_gui
 import threading
 from queue import Queue
 from gpiozero import Button
+import lights
+from stoppable_thread import StoppableThread
+import RPi.GPIO as GPIO #imports servo library
 
 def testing():
     # SETUP CODE HERE - things to run only once, like GPIO for the lights
@@ -9,6 +12,18 @@ def testing():
     prev_state = 0
     standby = False
     switch = True
+    
+    #initialize gpio
+    GPIO.setmode(GPIO.BCM) 
+    GPIO_PIN = 24
+    # Set the GPIO pin as an output
+    GPIO.setup(GPIO_PIN, GPIO.OUT)
+    # PWM?? - mimmum pwm signal
+    pwm = GPIO.PWM(GPIO_PIN, 100)
+    pwm.start(11)
+    
+    standby_lights = StoppableThread(target = lights.run_standby_lights, args = (pwm, ), daemon = True)
+    active_lights = StoppableThread(target = lights.run_active_lights, args = (pwm, ), daemon = True)
     
     # main loop, takes care of state switching and launching threads when necessary
     while True:
@@ -21,15 +36,23 @@ def testing():
             standby = not standby # changes the current state
             
             if standby: # sets it to standby state, kills old threads and makes new ones
+                # Start the lights thread for standby
+                standby_lights.start()
+                active_lights.stop()
+                
                 # Set GUI to be in standby mode
-                gui.set_standby()
-                #print("in standby")
+                #gui.set_standby()
+                print("in standby")
                 pass
             
             else: # sets to active state, turns everything on
+                # Start the lights thread for standby
+                active_lights.start()
+                standby_lights.start()
+                
                 # Set GUI to be in active mode
-                gui.set_active()
-                #print("in active")
+                #gui.set_active()
+                print("in active")
                 pass
 
         prev_state = curr_state
@@ -47,8 +70,8 @@ if __name__ == "__main__":
     # initialize and run main function as a thread
     #main_thread = threading.Thread(target = main, args = (sensor_data_queue, gui, ), daemon = True)
     #main_thread.start()
-    test = threading.Thread(target = testing, daemon = True)
+    test = threading.Thread(target = testing, daemon = False)
     test.start()
     
     # run gui - MUST BE AT END
-    gui.mainloop()
+    #gui.mainloop()

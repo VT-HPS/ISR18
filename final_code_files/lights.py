@@ -37,3 +37,29 @@ def run_lights():
         # Clean up GPIO
         pwm.stop()
         GPIO.cleanup()
+        
+        
+def run_standby_lights(thread, pwm):
+    while (not thread.stopped()):
+        print("standby lights")
+        time.sleep(1)
+    
+    """while (not thread.stopped()):
+        pwm.ChangeDutyCycle(13)
+        time.sleep(4)
+        pwm.ChangeDutyCycle(17)
+        time.sleep(4)
+        pwm.ChangeDutyCycle(0)"""
+
+
+def run_active_lights(thread, pwm):
+    while (not thread.stopped()):
+        print("active lights")
+        time.sleep(1)
+    
+    '''while (not thread.stopped()):
+        pwm.ChangeDutyCycle(11)
+        time.sleep(4)
+        pwm.ChangeDutyCycle(14)
+        time.sleep(4)
+        pwm.ChangeDutyCycle(0)'''
