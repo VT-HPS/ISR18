@@ -1,38 +1,58 @@
 import time
-import datetime
 import random
 
-# Mock version: can run on my laptop cuz its rainy outside
+# vars
+currentstateA = 0
+prevstateA = 0
+prevmillisA = 0
+rpmA = 0
 
-def pulse_detected(sensor_data_queue):
-    # random vals
-    rpm = random.randint(500, 2000)  
+def rpm_value():
+    # mock environment ( makes random val for pulses)
+    global currentstateA, prevstateA, prevmillisA, rpmA
 
-    # get queue data
-    if not sensor_data_queue.empty():
-        latest_data = sensor_data_queue.get()
-    else:
-        # default values if queue is empty
-        latest_data = {
-            'depth': 0,
-            'water_pressure': 0,
-            'pressure_speed': 0,
-            'battery_voltage': 0,
-            'rpm': 0,
-            'leak_status': 0,
-            'temperature': 0
-        }
+    # simulating a random pulse every 500ms to 2000ms
+    durationA = random.randint(500, 2000)
 
-    latest_data['rpm'] = rpm  # update only rpm
+    # sim pulse logic
+    currentstateA = 1 if random.random() > 0.5 else 0  # random HIGH/LOW
 
-    sensor_data_queue.put(latest_data)  # put updated data back into the queue
-    print(f"Updated RPM: {rpm}")  # debugging print
+    if prevstateA != currentstateA:  # simulate state change
+        if currentstateA == 0:  # LOW to HIGH transition
+            rpmA = 60000 // durationA  # RPM calc
+            prevmillisA = int(time.time() * 1000)  # time for next calc
+
+    # sim 2-sec timeout to set RPM zero
+    if (int(time.time() * 1000) - prevmillisA) >= 2000:
+        rpmA = 0
+
+    prevstateA = currentstateA  # state for next cycle
+    print(f"Mock RPM: {rpmA}")  # debugging output
 
 def monitor_rpm(sensor_data_queue):
-    # simulated RPM monitor loop
+    global rpmA
     try:
         while True:
-            pulse_detected(sensor_data_queue)  # generates new RPM valus
-            time.sleep(1)  # 1 sec sensor update
+            rpm_value()  # sim RPM readings
+
+            # update queue with fake RPM value
+            if not sensor_data_queue.empty():
+                latest_data = sensor_data_queue.get()
+            else:
+                latest_data = {
+                    'depth': 0,
+                    'water_pressure': 0,
+                    'pressure_speed': 0,
+                    'battery_voltage': 0,
+                    'rpm': 0,
+                    'leak_status': 0,
+                    'temperature': 0
+                }
+
+            latest_data['rpm'] = rpmA  # update RPM 
+            sensor_data_queue.put(latest_data)
+
+            time.sleep(0.5)  # sim update rate
+
     except KeyboardInterrupt:
-        print("RPM monitoring stopped")
+        print("Mock RPM monitoring stopped")
