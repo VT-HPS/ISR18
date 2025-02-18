@@ -5,7 +5,7 @@ from gpiozero import Button
 
 def testing():
     # SETUP CODE HERE - things to run only once, like GPIO for the lights
-    button = Button(2) # placeholder pin for now, don't know what this should be
+    button = Button(4) # placeholder pin for now, don't know what this should be
     prev_state = 0
     standby = False
     switch = True
@@ -23,24 +23,18 @@ def testing():
             if standby: # sets it to standby state, kills old threads and makes new ones
                 # Set GUI to be in standby mode
                 gui.set_standby()
+                #print("in standby")
                 pass
             
             else: # sets to active state, turns everything on
                 # Set GUI to be in active mode
                 gui.set_active()
+                #print("in active")
                 pass
 
         prev_state = curr_state
         switch = False
 
-"""
-def testing():
-    import time
-    while True:
-        gui.set_standby()
-        time.sleep(2)
-        gui.set_active()
-        time.sleep(4)"""
 
 
 if __name__ == "__main__":
