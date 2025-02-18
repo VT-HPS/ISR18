@@ -37,8 +37,8 @@ def testing():
             
             if standby: # sets it to standby state, kills old threads and makes new ones
                 # Start the lights thread for standby
-                standby_lights.start()
                 active_lights.stop()
+                standby_lights.start()
                 
                 # Set GUI to be in standby mode
                 #gui.set_standby()
@@ -47,8 +47,8 @@ def testing():
             
             else: # sets to active state, turns everything on
                 # Start the lights thread for standby
+                standby_lights.stop()
                 active_lights.start()
-                standby_lights.start()
                 
                 # Set GUI to be in active mode
                 #gui.set_active()
