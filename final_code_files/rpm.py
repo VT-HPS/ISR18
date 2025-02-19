@@ -68,7 +68,7 @@ import time
 import RPi.GPIO as GPIO
 
 # define GPIO pin for RPM sensor (test circuit)
-RPM_SENSOR_PIN = 10  
+RPM_SENSOR_PIN = 17  
 
 # vars
 currentstateA = 0
