@@ -1,52 +1,36 @@
 import time
-import RPi.GPIO as GPIO
+import random
 
-# Define GPIO pin for RPM sensor
-RPM_SENSOR_PIN = 17  # Adjust this if needed
+# Define GPIO pins for RPM sensors (mocked, no actual GPIO usage)
+RPM_SENSOR_PIN_A = 23  # First RPM sensor
+RPM_SENSOR_PIN_B = 25  # Second RPM sensor
 
 # Global variables
-currentstateA = 0
-prevstateA = 0
-prevmillisA = 0
 rpmA = 0
+rpmB = 0
 
 def rpm_value():
     """
-    Reads the RPM sensor and calculates RPM.
+    Generates a random RPM value to simulate sensor data.
     """
-    global currentstateA, prevstateA, prevmillisA, rpmA
-
-    # Read RPM sensor state
-    currentstateA = GPIO.input(RPM_SENSOR_PIN)
-
-    # Detect change in state
-    if prevstateA != currentstateA:
-        if currentstateA == GPIO.HIGH:  # LOW to HIGH transition
-            durationA = int(time.time() * 1000) - prevmillisA  # time difference in ms
-            if durationA > 0:
-                rpmA = 60000 // durationA  # RPM calculation
-            prevmillisA = int(time.time() * 1000)  # Store time for next calculation
-
-    # No pulse detected for 2 seconds, set RPM to 0
-    if (int(time.time() * 1000) - prevmillisA) >= 2000:
-        rpmA = 0
-
-    prevstateA = currentstateA  # Store this scan for next cycle
-    print(f"Real RPM: {rpmA}")  # Debugging output
+    return random.randint(500, 3000)  # Simulated RPM range
 
 def monitor_rpm(sensor_data_queue):
     """
-    Continuously monitors RPM and updates the shared sensor_data_queue.
+    Continuously generates mock RPM sensor data and updates the shared sensor_data_queue.
     """
-    global rpmA
-
-    # Setup GPIO
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(RPM_SENSOR_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    global rpmA, rpmB
 
     try:
         while True:
-            rpm_value()  # Read RPM
+            rpmA = rpm_value()
+            rpmB = rpm_value()
+
+            # Compute average RPM
+            averaged_rpm = (rpmA + rpmB) / 2
+
+            # Print RPM values
+            print(f"RPM A: {rpmA}, RPM B: {rpmB}, Averaged RPM: {averaged_rpm}")
 
             # Fetch latest data from queue or create new default data
             if not sensor_data_queue.empty():
@@ -63,12 +47,10 @@ def monitor_rpm(sensor_data_queue):
                 }
 
             # Update RPM value
-            latest_data['rpm'] = rpmA  
+            latest_data['rpm'] = averaged_rpm  
             sensor_data_queue.put(latest_data)
 
             time.sleep(0.01)  # Small delay to allow processing
 
     except KeyboardInterrupt:
-        print("Real RPM monitoring stopped.")
-    finally:
-        GPIO.cleanup()  # Clean up GPIO on exit
+        print("Mock RPM monitoring stopped.")

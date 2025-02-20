@@ -1,124 +1,85 @@
-# import time
-# import RPi.GPIO as GPIO
-
-# # Define GPIO pin for RPM sensor
-# RPM_SENSOR_PIN = 17  # Adjust this to match your wiring
-
-# # Global variables matching Arduino code
-# currentstateA = 0
-# prevstateA = 0
-# prevmillisA = 0
-# rpmA = 0
-
-# def rpm_value():
-#     global currentstateA, prevstateA, prevmillisA, rpmA
-
-#     currentstateA = GPIO.input(RPM_SENSOR_PIN)
-
-#     if prevstateA != currentstateA:
-#         if currentstateA == GPIO.HIGH:  
-#             durationA = int(time.time() * 1000) - prevmillisA  
-#             if durationA > 0:
-#                 rpmA = 60000 // durationA  
-#             prevmillisA = int(time.time() * 1000)
-
-#     if (int(time.time() * 1000) - prevmillisA) >= 2000:
-#         rpmA = 0
-
-#     prevstateA = currentstateA 
-#     print(f"RPM: {rpmA}") 
-
-# def monitor_rpm(sensor_data_queue):
-#     global rpmA
-
-#     GPIO.setmode(GPIO.BCM)
-#     GPIO.setup(RPM_SENSOR_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-#     try:
-#         while True:
-#             rpm_value()  
-#             if not sensor_data_queue.empty():
-#                 latest_data = sensor_data_queue.get()
-#             else:
-#                 latest_data = {
-#                     'depth': 0,
-#                     'water_pressure': 0,
-#                     'pressure_speed': 0,
-#                     'battery_voltage': 0,
-#                     'rpm': 0,
-#                     'leak_status': 0,
-#                     'temperature': 0
-#                 }
-
-#             latest_data['rpm'] = rpmA  
-#             sensor_data_queue.put(latest_data)
-
-#             time.sleep(0.01) 
-
-#     except KeyboardInterrupt:
-#         print("RPM monitoring stopped")
-#     finally:
-#         GPIO.cleanup() 
-
-
-###########################################################################
-
-### Ciruit test code:
 import time
 import RPi.GPIO as GPIO
 
-# define GPIO pin for RPM sensor (test circuit)
-RPM_SENSOR_PIN = 17  
+# Define GPIO pins for RPM sensors
+RPM_SENSOR_PIN_A = 23  # First RPM sensor
+RPM_SENSOR_PIN_B = 25  # Second RPM sensor
 
-# vars
+# Global variables
 currentstateA = 0
 prevstateA = 0
 prevmillisA = 0
 rpmA = 0
 
-def rpm_value():
-    # reads circuit input and calc rpm
-    global currentstateA, prevstateA, prevmillisA, rpmA
+currentstateB = 0
+prevstateB = 0
+prevmillisB = 0
+rpmB = 0
 
-    # read RPMA sensor state
-    currentstateA = GPIO.input(RPM_SENSOR_PIN)
+def rpm_value(sensor_pin, prev_state, prev_millis, rpm):
+    """
+    Reads the RPM sensor and calculates RPM.
+    """
+    current_state = GPIO.input(sensor_pin)
 
-    # ff there is a change in input
-    if prevstateA != currentstateA:
-        if currentstateA == GPIO.HIGH:  # LOW to HIGH transition
-            durationA = int(time.time() * 1000) - prevmillisA  # time difference in ms
-            if durationA > 0:
-                rpmA = 60000 // durationA  # RPM calculation
-            prevmillisA = int(time.time() * 1000)  # store time for next calculation
+    # Detect change in state
+    if prev_state != current_state:
+        if current_state == GPIO.HIGH:  # LOW to HIGH transition
+            duration = int(time.time() * 1000) - prev_millis  # Time difference in ms
+            if duration > 0:
+                rpm = 60000 // duration  # RPM calculation
+            prev_millis = int(time.time() * 1000)  # Store time for next calculation
 
-    # no pulse detected for 2 seconds, set RPM to 0
-    if (int(time.time() * 1000) - prevmillisA) >= 2000:
-        rpmA = 0
+    # No pulse detected for 2 seconds, set RPM to 0
+    if (int(time.time() * 1000) - prev_millis) >= 2000:
+        rpm = 0
 
-    prevstateA = currentstateA  # store this scan for next cycle
-    print(f"RPM: {rpmA}")  # show real-time RPM
+    return current_state, prev_millis, rpm
 
-def main():
-    # runs loop
-    global rpmA
+def monitor_rpm(sensor_data_queue):
+    """
+    Continuously monitors both RPM sensors and updates the shared sensor_data_queue.
+    """
+    global rpmA, rpmB
 
     # Setup GPIO
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(RPM_SENSOR_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-    print("Press the test circuit button to simulate RPM sensor pulses.")
-    print("Press CTRL+C to stop.\n")
+    GPIO.setup(RPM_SENSOR_PIN_A, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(RPM_SENSOR_PIN_B, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     try:
         while True:
-            rpm_value()  # read pulses and calc RPM
-            time.sleep(0.01)  # 10ms delay
+            global prevstateA, prevmillisA, prevstateB, prevmillisB
+            prevstateA, prevmillisA, rpmA = rpm_value(RPM_SENSOR_PIN_A, prevstateA, prevmillisA, rpmA)
+            prevstateB, prevmillisB, rpmB = rpm_value(RPM_SENSOR_PIN_B, prevstateB, prevmillisB, rpmB)
+
+            # Compute average RPM
+            averaged_rpm = (rpmA + rpmB) / 2
+
+            # Print RPM values
+            print(f"RPM A: {rpmA}, RPM B: {rpmB}, Averaged RPM: {averaged_rpm}")
+
+            # Fetch latest data from queue or create new default data
+            if not sensor_data_queue.empty():
+                latest_data = sensor_data_queue.get()
+            else:
+                latest_data = {
+                    'depth': 0,
+                    'water_pressure': 0,
+                    'pressure_speed': 0,
+                    'battery_voltage': 0,
+                    'rpm': 0,
+                    'leak_status': 0,
+                    'temperature': 0
+                }
+
+            # Update RPM value
+            latest_data['rpm'] = averaged_rpm  
+            sensor_data_queue.put(latest_data)
+
+            time.sleep(0.01)  # Small delay to allow processing
 
     except KeyboardInterrupt:
-        print("\nRPM monitoring stopped.")
+        print("Real RPM monitoring stopped.")
     finally:
-        GPIO.cleanup()  
-
-if __name__ == "__main__":
-    main()
-
+        GPIO.cleanup()  # Clean up GPIO on exit
