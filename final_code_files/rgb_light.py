@@ -6,13 +6,13 @@ import board
 #from leak import leak as leak_check
 
 #gpio 9 is ground for warning lights
-white_ledLeak = LED(4)
+white_ledLeak = LED(21)
 #yellow_ledLeak = LED(24)  probably not needed since leak is either on or off
-red_ledLeak = LED(18)
+red_ledLeak = LED(26)
 
-green_ledBat = LED(17)
-yellow_ledBat = LED(27)
-red_ledBat = LED(22)
+green_ledBat = LED(20)
+yellow_ledBat = LED(16)
+red_ledBat = LED(21)
 
 def run_warning_lights(bat_voltage, is_leak):
     while(True):

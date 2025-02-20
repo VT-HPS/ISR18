@@ -2,7 +2,7 @@
 import time
 
 
-def __init__(self, pin = 23):
+def __init__(self, pin = 6):
     self.leak_pin = pin
     #GPIO.setmode(GPIO.BCM)
     #GPIO.setup(self.leak_pin, GPIO.IN)

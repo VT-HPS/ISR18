@@ -7,7 +7,7 @@ def run_lights():
     # figure out difference between duty cycle and 
 
     GPIO.setmode(GPIO.BCM) 
-    GPIO_PIN = 24
+    GPIO_PIN = 5
 
 
     # Set the GPIO pin as an output
