@@ -57,7 +57,7 @@ def monitor_rpm(sensor_data_queue):
             averaged_rpm = (rpmA + rpmB) / 2
 
             # Print RPM values
-            #print(f"RPM A: {rpmA}, RPM B: {rpmB}, Averaged RPM: {averaged_rpm}")
+            print(f"RPM A: {rpmA}, RPM B: {rpmB}, Averaged RPM: {averaged_rpm}")
 
             # Fetch latest data from queue or create new default data
             if not sensor_data_queue.empty():
