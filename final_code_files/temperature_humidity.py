@@ -1,6 +1,9 @@
 # SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
 # SPDX-License-Identifier: MIT
-
+import board
+import adafruit_sht31d
+i2c = board.I2C()
+temp_sensor = adafruit_sht31d.SHT31D(i2c)
 
 def read_temp(sensor):
     # Create sensor object, communicating over the board's default I2C bus
@@ -15,3 +18,6 @@ def read_humidity():
     sensor = adafruit_sht31d.SHT31D(i2c)
     
     return sensor.relative_humidity
+
+#while True:
+    #print(temp_sensor.temperature)

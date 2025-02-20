@@ -132,18 +132,18 @@ class SpeedDepthHeadingGauges(tk.Tk):
             
         
             # Generate random speed, depth, and heading values
-            random_speed = random.uniform(0, 5)
-            random_depth = random.uniform(0, 30)
+            #random_speed = random.uniform(0, 5)
+            #random_depth = random.uniform(0, 30)
             random_heading = random.uniform(0, 360)
-            random_rpm = random.uniform(0, 200) # placeholder max rpm
+            #random_rpm = random.uniform(0, 200) # placeholder max rpm
 
             # Update speed gauge and label
-            self.update_speed_gauge(random_speed)
-            #self.update_speed_gauge(data["pressure_speed"])
+            #self.update_speed_gauge(random_speed)
+            self.update_speed_gauge(data["pressure_speed"])
 
             # Update depth gauge and label
-            self.update_depth_gauge(random_depth)
-            #self.update_depth_gauge(data["depth"])
+            #self.update_depth_gauge(random_depth)
+            self.update_depth_gauge(data["depth"])
 
             # Update heading gauge and label
             heading_value = f"{random_heading:.2f} degrees"

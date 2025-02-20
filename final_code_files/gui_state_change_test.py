@@ -15,7 +15,7 @@ def testing():
     
     #initialize gpio
     GPIO.setmode(GPIO.BCM) 
-    GPIO_PIN = 24
+    GPIO_PIN = 5
     # Set the GPIO pin as an output
     GPIO.setup(GPIO_PIN, GPIO.OUT)
     # PWM?? - mimmum pwm signal
@@ -43,7 +43,7 @@ def testing():
                 standby_lights.activate()
                 
                 # Set GUI to be in standby mode
-                #gui.set_standby()
+                gui.set_standby()
                 print("in standby")
                 pass
             
@@ -53,7 +53,7 @@ def testing():
                 active_lights.activate()
                 
                 # Set GUI to be in active mode
-                #gui.set_active()
+                gui.set_active()
                 print("in active")
                 pass
 
@@ -76,4 +76,4 @@ if __name__ == "__main__":
     test.start()
     
     # run gui - MUST BE AT END
-    #gui.mainloop()
+    gui.mainloop()

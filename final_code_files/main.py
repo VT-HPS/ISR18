@@ -29,11 +29,12 @@ import new_gui
 import threading
 import sensor_manager
 from queue import Queue
-import rpm
 from gpiozero import Button
-#import lights
-import stoppable_thread
+import lights
+import rpm
+from stoppable_thread import StoppableThread
 #import rgb_light
+import RPi.GPIO as GPIO #imports servo library
 
 
 def main(queue):
@@ -42,6 +43,15 @@ def main(queue):
     prev_state = 0
     standby = False
     switch = True
+    
+    #initialize gpio
+    GPIO.setmode(GPIO.BCM) 
+    GPIO_PIN = 5
+    # Set the GPIO pin as an output
+    GPIO.setup(GPIO_PIN, GPIO.OUT)
+    # PWM?? - mimmum pwm signal
+    pwm = GPIO.PWM(GPIO_PIN, 100)
+    pwm.start(11)
     
     # create and run rpm thread
     # TODO need a file for this lmao
@@ -52,6 +62,12 @@ def main(queue):
     sensor_thread = threading.Thread(target = sensor_manager.manage_sensors, daemon = True, args = (queue, ))
     sensor_thread.start()
     
+    #lights threads
+    standby_lights = StoppableThread(target = lights.run_standby_lights, args = (pwm, ), daemon = True)
+    active_lights = StoppableThread(target = lights.run_active_lights, args = (pwm, ), daemon = True)
+    standby_lights.start()
+    active_lights.start()
+
     # TODO probably hank's rgb lights here
     #rgb_thread = threading.Thread(target = rgb_light.run_warning_lights, daemon = True, args = (sensor_manager.battery_warning.voltage_data, sensor_manager.leak.read_leak_status))
     #rgb_thread.start()
@@ -68,30 +84,24 @@ def main(queue):
             
             if standby: # sets it to standby state, kills old threads and makes new ones
                 # Start the lights thread for standby
-                #standby_lights = StoppableThread(target = PLACEHOLDER, daemon = True)
-                #standby_lights.start()
+                active_lights.deactivate()
+                standby_lights.activate()
                 
                 # Set GUI to be in standby mode
                 gui.set_standby()
-                pass
+                print("in standby")
             
             else: # sets to active state, turns everything on
-                # Start the lights thread for active
-                #active_lights = StoppableThread(target = PLACEHOLDER, daemon = True)
-                #active_lights.start()
+                # Start the lights thread for standby
+                standby_lights.deactivate()
+                active_lights.activate()
                 
                 # Set GUI to be in active mode
                 gui.set_active()
-                pass
+                print("in active")
 
         prev_state = curr_state
         switch = False
-        break
-    
-    
-    # create and run lights thread
-    #lights_thread = threading.Thread(target = lights.run_lights, daemon = True)
-    #lights_thread.start()
 
 if __name__ == "__main__":
     # create the queue for sensor data

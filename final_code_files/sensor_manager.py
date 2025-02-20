@@ -30,7 +30,6 @@ def manage_sensors(queue):
     # LOGGING SETUP #
     #################
 
-    
     # see if log directory exists
     if (not os.path.exists(os.getcwd() + "/final_code_files/logs")):
         # make log directory
@@ -89,7 +88,8 @@ def manage_sensors(queue):
     #leak_sensor = LeakSensor()
 
     #temperature sensor
-    i2c = board.I2C(board.SCL, board.SDA)
+    i2c = board.I2C()
+    #i2c = board.I2C(board.SCL, board.SDA)
     temp_sensor = adafruit_sht31d.SHT31D(i2c)
     
     
@@ -114,6 +114,7 @@ def manage_sensors(queue):
             rpm = count
             leak_status = leak.read_leak_status()
             temperature = temperature_humidity.read_temp(temp_sensor)
+            
             
             gui_data_buffer = {
                 'depth': depth,
