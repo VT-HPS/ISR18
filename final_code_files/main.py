@@ -32,6 +32,7 @@ from queue import Queue
 from gpiozero import Button
 #import lights
 import stoppable_thread
+#import rgb_light
 
 
 def main(queue):
@@ -51,7 +52,7 @@ def main(queue):
     sensor_thread.start()
     
     # TODO probably hank's rgb lights here
-    #rgb_thread = threading.Thread(target = PLACEHOLDER, daemon = True, args = (PLACEHOLDER, ))
+    #rgb_thread = threading.Thread(target = rgb_light.run_warning_lights, daemon = True, args = (sensor_manager.battery_warning.voltage_data, sensor_manager.leak.read_leak_status))
     #rgb_thread.start()
     
     # main loop, takes care of state switching and launching threads when necessary
