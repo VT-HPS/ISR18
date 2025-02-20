@@ -29,6 +29,7 @@ import new_gui
 import threading
 import sensor_manager
 from queue import Queue
+import rpm
 from gpiozero import Button
 #import lights
 import stoppable_thread
@@ -44,8 +45,8 @@ def main(queue):
     
     # create and run rpm thread
     # TODO need a file for this lmao
-    #rpm_thread = threading.Thread(target=rpm.monitor_rpm, daemon=True, args=(queue,))
-    #rpm_thread.start()
+    rpm_thread = threading.Thread(target=rpm.monitor_rpm, daemon=True, args=(queue,))
+    rpm_thread.start()
     
     # create and run sensor manager thread
     sensor_thread = threading.Thread(target = sensor_manager.manage_sensors, daemon = True, args = (queue, ))

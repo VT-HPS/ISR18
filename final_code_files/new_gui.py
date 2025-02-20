@@ -111,14 +111,23 @@ class SpeedDepthHeadingGauges(tk.Tk):
         # Run data if the screen is not in standby
         if not self.standby_bool:
             # TESTING CODE FOR QUEUE
-            try:
-                data = self.sensor_data_queue.get_nowait()
-                print(f"new data: {data}")
-                self.data = data
-            except queue.Empty:
-                print("queue is empty")
-                data = self.data
-                pass
+            if not self.sensor_data_queue.empty():
+                data = list(self.sensor_data_queue.queue)[-1]  # Peek at the latest entry
+                self.data = data  # Store last valid data
+            else:
+                print("Mock GUI: Queue is empty, using last known values.")
+                if self.data is None:  # If no previous data, initialize with defaults
+                    self.data = {
+                        "depth": 0,
+                        "water_pressure": 0,
+                        "pressure_speed": 0,
+                        "battery_voltage": 0,
+                        "rpm": 0,
+                        "leak_status": 0,
+                        "temperature": 0
+                    }
+            
+            print(f"new data: {self.data}")
             
             
         
@@ -144,8 +153,8 @@ class SpeedDepthHeadingGauges(tk.Tk):
             self.update_heading_canvas(random_heading)
             
             # Update rpm gauge
-            self.update_rpm_gauge(random_rpm)
-            #self.update_rpm_gauge(data["rpm"])
+            #self.update_rpm_gauge(random_rpm)
+            self.update_rpm_gauge(data["rpm"])
 
         # Simulated voltage between 10 and 14 volts
         self.voltage = random.uniform(10, 14)  
