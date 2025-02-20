@@ -8,7 +8,7 @@ import RPi.GPIO as GPIO #imports servo library
 
 def testing():
     # SETUP CODE HERE - things to run only once, like GPIO for the lights
-    button = Button(4) # placeholder pin for now, don't know what this should be
+    button = Button(24) # placeholder pin for now, don't know what this should be
     prev_state = 0
     standby = False
     switch = True
