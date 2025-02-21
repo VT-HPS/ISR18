@@ -35,7 +35,7 @@ class PressureSensor:
 
         # timestamped filename for storing the data
         curr_time = datetime.datetime.now()
-        self.filename = f"{log_dir}/{curr_time.month}_{curr_time.day}_{curr_time.hour}_{curr_time.minute}_{run_number}.csv"
+        self.filename = f"{log_dir}/pressure_{curr_time.month}_{curr_time.day}_{curr_time.hour}_{curr_time.minute}_{run_number}.csv"
 
         # header to CSV file
         with open(self.filename, 'a', newline='') as file:
